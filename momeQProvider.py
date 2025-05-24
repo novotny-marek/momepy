@@ -2,6 +2,7 @@ from qgis.core import QgsProcessingProvider
 from .test_algorithm import (
     test_algorithm,
     facade_ratio,
+    facade_ratio_qgs,
 )
 
 class MomeQProvider(QgsProcessingProvider):
@@ -10,6 +11,7 @@ class MomeQProvider(QgsProcessingProvider):
         """ Load each algorithm into current provider. """
         self.addAlgorithm(test_algorithm())
         self.addAlgorithm(facade_ratio())
+        self.addAlgorithm(facade_ratio_qgs())
 
     def id(self) -> str:
         """ The id of the plugin used for identifying the provider. """
