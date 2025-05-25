@@ -6,6 +6,7 @@ from qgis.core import (
     QgsFeature,
     QgsProcessing,
     QgsFeatureSink,
+    QgsGeometry,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterFeatureSink,
@@ -364,6 +365,95 @@ class form_factor(QgsProcessingAlgorithm):
             # Copy attributes and add new form factor
             attributes = feature.attributes()
             attributes.append(form_factor_value)
+            output_feature.setAttributes(attributes)
+
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+            # Update progress
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+    
+    def createInstance(self):
+        return self.__class__()
+    
+class circular_compactness(QgsProcessingAlgorithm):
+    INPUT = 'INPUT'
+    OUTPUT = 'OUTPUT'
+
+    def name(self) -> str:
+        return 'circular_compactness'
+    
+    def displayName(self) -> str:
+        return 'Circular compactness'
+    
+    def group(self) -> str:
+        return 'Shape'
+    
+    def groupId(self) -> str:
+        return 'shape'
+    
+    def shortHelpString(self) -> str:
+        return 'Calculated the circular compactness of each object given its geometry'
+    
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                'Input layer',
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, 'Output layer')
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Create output fields (original fields + new circular compactness field)
+        fields = source.fields()
+        fields.append(QgsField('circular_compactness', QVariant.Double))
+
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs()
+        )
+
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            geom = feature.geometry()
+            area = geom.area()
+
+            # Calculate circular compactness
+            circle_geom, circle_center, circle_radius = geom.minimalEnclosingCircle()
+
+            if circle_radius > 0:
+                circular_compactness = area / (np.pi * circle_radius ** 2)
+            else:
+                circular_compactness = 0
+
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(geom)
+
+            # Copy attributes and add new circular compactness
+            attributes = feature.attributes()
+            attributes.append(circular_compactness)
             output_feature.setAttributes(attributes)
 
             # Add feature to sink

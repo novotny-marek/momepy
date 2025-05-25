@@ -8,6 +8,7 @@ from .shape import (
     fractal_dimension,
     square_compactness,
     form_factor,
+    circular_compactness,
 )
 
 class MomeQProvider(QgsProcessingProvider):
@@ -20,6 +21,7 @@ class MomeQProvider(QgsProcessingProvider):
         self.addAlgorithm(fractal_dimension())
         self.addAlgorithm(square_compactness())
         self.addAlgorithm(form_factor())
+        self.addAlgorithm(circular_compactness())
 
     def id(self) -> str:
         """ The id of the plugin used for identifying the provider. """
