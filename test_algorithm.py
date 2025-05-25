@@ -92,16 +92,16 @@ class test_algorithm(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class facade_ratio(QgsProcessingAlgorithm):
+class facade_ratio_gpd(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     FIELD_NAME = 'FIELD_NAME'
 
     def name(self) -> str:
-        return 'facade_ratio'
+        return 'facade_ratio_gpd'
     
     def displayName(self) -> str:
-        return 'Facade ratio'
+        return 'Facade ratio GeoPandas'
     
     def group(self) -> str:
         return 'Testing Algorithms'
@@ -110,7 +110,7 @@ class facade_ratio(QgsProcessingAlgorithm):
         return 'testing_algorithms'
     
     def shortHelpString(self) -> str:
-        return 'Calculates facade ratio'
+        return 'Calculates facade ratio using GeoPandas'
     
     def initAlgorithm(self, config=None):
         self.addParameter(
@@ -160,93 +160,6 @@ class facade_ratio(QgsProcessingAlgorithm):
 
             sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
 
-        return {self.OUTPUT: dest_id}
-    
-    def createInstance(self):
-        return self.__class__()
-    
-class facade_ratio_qgs(QgsProcessingAlgorithm):
-    INPUT = 'INPUT'
-    OUTPUT = 'OUTPUT'
-    FIELD_NAME = 'FIELD_NAME'
-
-    def name(self) -> str:
-        return 'facade_ratio_qgs'
-    
-    def displayName(self) -> str:
-        return 'Facade ratio QGIS'
-    
-    def group(self) -> str:
-        return 'Testing Algorithms'
-    
-    def groupId(self) -> str:
-        return 'testing_algorithms'
-    
-    def shortHelpString(self) -> str:
-        return 'Calculates facade ratio using QGIS'
-    
-    def initAlgorithm(self, config=None):
-        self.addParameter(
-            QgsProcessingParameterFeatureSource(
-                self.INPUT,
-                'Input layer',
-                [QgsProcessing.SourceType.VectorPolygon],
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, 'Output layer')
-        )
-
-    def processAlgorithm(self, parameters, context, feedback):
-        source = self.parameterAsSource(parameters, self.INPUT, context)
-    
-        # Create output fields (original fields + new ratio field)
-        fields = source.fields()
-        fields.append(QgsField('facade_ratio', QVariant.Double))
-    
-        # Create sink
-        (sink, dest_id) = self.parameterAsSink(
-            parameters,
-            self.OUTPUT,
-            context,
-            fields,
-            source.wkbType(),
-            source.sourceCrs()
-        )
-    
-        # Get features from source
-        features = source.getFeatures()
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
-    
-        # Process each feature directly
-        for current, feature in enumerate(features):
-            if feedback.isCanceled():
-                break
-                
-            # Get geometry and calculate facade ratio directly with QGIS geometry
-            geom = feature.geometry()
-            area = geom.area()
-            perimeter = geom.length()
-            
-            # Calculate facade ratio (avoid division by zero)
-            facade_ratio = area / perimeter if perimeter > 0 else 0.0
-            
-            # Create output feature
-            output_feature = QgsFeature(fields)
-            output_feature.setGeometry(geom)
-            
-            # Copy attributes and add new ratio
-            attributes = feature.attributes()
-            attributes.append(facade_ratio)
-            output_feature.setAttributes(attributes)
-            
-            # Add feature to sink
-            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
-            
-            # Update progress
-            feedback.setProgress(int(current * total))
-    
         return {self.OUTPUT: dest_id}
     
     def createInstance(self):
