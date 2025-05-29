@@ -9,6 +9,7 @@ from .shape import (
     square_compactness,
     form_factor,
     circular_compactness,
+    convexity,
 )
 
 class MomeQProvider(QgsProcessingProvider):
@@ -22,6 +23,7 @@ class MomeQProvider(QgsProcessingProvider):
         self.addAlgorithm(square_compactness())
         self.addAlgorithm(form_factor())
         self.addAlgorithm(circular_compactness())
+        self.addAlgorithm(convexity())
 
     def id(self) -> str:
         """ The id of the plugin used for identifying the provider. """
