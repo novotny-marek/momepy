@@ -6,5 +6,5 @@ analysis of cities from momepy library.
 ## TODO
 
 - [ ] Remove pixi environment
-- [ ] Fix the `facade_ratio` algorithm
+- [x] Fix the `facade_ratio` algorithm
 - [ ] Import momepy functions instead of copying them
