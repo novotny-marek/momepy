@@ -3,6 +3,7 @@ import numpy as np
 import shapely
 
 from PyQt5.QtCore import QVariant
+from .utils import to_gdf
 from qgis.core import (
     QgsField,
     QgsFeature,
