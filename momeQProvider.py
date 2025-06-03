@@ -1,6 +1,5 @@
 from qgis.core import QgsProcessingProvider
 from .test_algorithm import (
-    test_algorithm,
     facade_ratio_gpd,
 )
 from .shape import (
@@ -16,7 +15,6 @@ class MomeQProvider(QgsProcessingProvider):
     """ The """
     def loadAlgorithms(self):
         """ Load each algorithm into current provider. """
-        self.addAlgorithm(test_algorithm())
         self.addAlgorithm(facade_ratio_gpd())
         self.addAlgorithm(facade_ratio())
         self.addAlgorithm(fractal_dimension())
