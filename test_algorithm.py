@@ -13,7 +13,7 @@ from qgis.core import (
     QgsProcessingParameterFeatureSource,
 )
     
-class facade_ratio_gpd(QgsProcessingAlgorithm):
+class facade_ratio_gpd_old(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     FIELD_NAME = 'FIELD_NAME'
