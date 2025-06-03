@@ -23,7 +23,7 @@ class facade_ratio_gpd_old(QgsProcessingAlgorithm):
         return 'facade_ratio_gpd'
     
     def displayName(self) -> str:
-        return 'Facade ratio GeoPandas'
+        return 'Facade ratio GeoPandas olde version'
     
     def group(self) -> str:
         return 'Testing Algorithms'
