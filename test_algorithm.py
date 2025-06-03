@@ -85,3 +85,76 @@ class facade_ratio_gpd_old(QgsProcessingAlgorithm):
     
     def createInstance(self):
         return self.__class__()
+    
+class facade_ratio_gpd_new(QgsProcessingAlgorithm):
+    INPUT = 'INPUT'
+    OUTPUT = 'OUTPUT'
+
+    def name(self) -> str:
+        return 'facade_ratio_gpd_new'
+    
+    def displayName(self) -> str:
+        return 'Facade ratio GeoPandas'
+    
+    def group(self) -> str:
+        return 'Testing Algorithms'
+    
+    def groupId(self) -> str:
+        return 'testing_algorithms'
+    
+    def shortHelpString(self) -> str:
+        return 'Calculates facade ratio using GeoPandas'
+    
+    def initAlgorithm(self, config=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                'Input layer',
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, 'Output layer')
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        geometry = to_gdf(source)
+
+        facade_ratio_series = geometry.area / geometry.length
+
+        fields = source.fields()
+        fields.append(QgsField('facade_ratio', QVariant.Double))
+
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs()
+        )
+
+        features = source.getFeatures()
+
+        ratio_values = facade_ratio_series.to_list()
+
+        for i, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+
+            attributes = feature.attributes()
+            attributes.append(ratio_values[i])
+            output_feature.setAttributes(attributes)
+
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+        return {self.OUTPUT: dest_id}
+    
+    def createInstance(self):
+        return self.__class__()
