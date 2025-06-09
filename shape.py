@@ -900,3 +900,85 @@ class equivalent_rectangular_index(QgsProcessingAlgorithm):
     
     def createInstance(self):
         return self.__class__()
+    
+class elongation(QgsProcessingAlgorithm):
+    INPUT = 'INPUT'
+    OUTPUT = 'OUTPUT'
+
+    def name(self) -> str:
+        return 'elongation'
+    
+    def displayName(self) -> str:
+        return 'Elongation'
+    
+    def group(self) -> str:
+        return 'Shape'
+    
+    def groupId(self) -> str:
+        return 'shape'
+    
+    def shortHelpString(self) -> str:
+        return 'Calculates the elongation of each object given its geometry'
+    
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                'Input Layer',
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, 'Output layer')
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Convert QGIS feature to GeoSeries and calculate elongation
+        geometry_series = qgs_to_gpd(source)
+        elongation_series = momepy.elongation(geometry_series)
+        elongation_values = elongation_series.to_list()
+
+        fields = source.fields()
+        fields.append(QgsField('elongation', QVariant.Double))
+
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs()
+        )
+
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+
+            # Copy attributes and add new elongation
+            attributes = feature.attributes()
+            attributes.append(elongation_values[current])
+            output_feature.setAttributes(attributes)
+
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+            # Update progress
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+    
+    def createInstance(self):
+        return self.__class__()
