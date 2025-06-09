@@ -83,9 +83,92 @@ class courtyard_area(QgsProcessingAlgorithm):
             output_feature = QgsFeature(fields)
             output_feature.setGeometry(feature.geometry())
             
-            # Copy attributes and add new ratio
+            # Copy attributes and add new courtyard area
             attributes = feature.attributes()
             attributes.append(courtyard_area_values[current])
+            output_feature.setAttributes(attributes)
+            
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+            
+            # Update progress
+            feedback.setProgress(int(current * total))
+    
+        return {self.OUTPUT: dest_id}
+    
+    def createInstance(self):
+        return self.__class__()
+    
+class longest_axis_length(QgsProcessingAlgorithm):
+    INPUT = 'INPUT'
+    OUTPUT = 'OUTPUT'
+
+    def name(self) -> str:
+        return 'longest_axis_length'
+    
+    def displayName(self) -> str:
+        return 'Longest axis length'
+    
+    def group(self) -> str:
+        return 'Dimension'
+    
+    def groupId(self) -> str:
+        return 'dimension'
+    
+    def shortHelpString(self) -> str:
+        return 'Calculates the length of the longest axis of object.'
+    
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                'Input layer',
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, 'Output layer')
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Convert QGIS source to GeoSeries and calculate longest axis length
+        geometry_series = qgs_to_gpd(source)
+        lal_series = momepy.longest_axis_length(geometry_series)
+        lal_values = lal_series.to_list()
+    
+        # Create output fields (original fields + new longest axis length field)
+        fields = source.fields()
+        fields.append(QgsField('lal', QVariant.Double))
+    
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs()
+        )
+    
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+    
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+                         
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+            
+            # Copy attributes and add new longest axis length
+            attributes = feature.attributes()
+            attributes.append(lal_values[current])
             output_feature.setAttributes(attributes)
             
             # Add feature to sink
