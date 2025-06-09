@@ -524,3 +524,85 @@ class convexity(QgsProcessingAlgorithm):
     
     def createInstance(self):
         return self.__class__()
+    
+class rectangularity(QgsProcessingAlgorithm):
+    INPUT = 'INPUT'
+    OUTPUT = 'OUTPUT'
+
+    def name(self) -> str:
+        return 'rectangularity'
+    
+    def displayName(self) -> str:
+        return 'Rectangularity'
+    
+    def group(self) -> str:
+        return 'Shape'
+    
+    def groupId(self) -> str:
+        return 'shape'
+    
+    def shortHelpString(self) -> str:
+        return 'Calculates the rectangularity of each object given its geometry'
+    
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                'Input Layer',
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, 'Output layer')
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Convert QGIS feature to GeoSeries and calculate rectangularity
+        geometry_series = qgs_to_gpd(source)
+        rectangularity_series = momepy.rectangularity(geometry_series)
+        rectangularity_values = rectangularity_series.to_list()
+
+        fields = source.fields()
+        fields.append(QgsField('rectangularity', QVariant.Double))
+
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs()
+        )
+
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+
+            # Copy attributes and add new convexity
+            attributes = feature.attributes()
+            attributes.append(rectangularity_values[current])
+            output_feature.setAttributes(attributes)
+
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+            # Update progress
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+    
+    def createInstance(self):
+        return self.__class__()
