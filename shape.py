@@ -1087,3 +1087,85 @@ class centroid_corner_distance(QgsProcessingAlgorithm):
     
     def createInstance(self):
         return self.__class__()
+    
+class linearity(QgsProcessingAlgorithm):
+    INPUT = 'INPUT'
+    OUTPUT = 'OUTPUT'
+
+    def name(self) -> str:
+        return 'linearity'
+    
+    def displayName(self) -> str:
+        return 'Linearity'
+    
+    def group(self) -> str:
+        return 'Shape'
+    
+    def groupId(self) -> str:
+        return 'shape'
+    
+    def shortHelpString(self) -> str:
+        return 'Calculates the linearity of each LineString'
+    
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                'Input Layer',
+                [QgsProcessing.SourceType.VectorLine],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, 'Output layer')
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Convert QGIS feature to GeoSeries and calculate linearity
+        geometry_series = qgs_to_gpd(source)
+        linearity_series = momepy.linearity(geometry_series)
+        linearity_values = linearity_series.to_list()
+
+        fields = source.fields()
+        fields.append(QgsField('linearity', QVariant.Double))
+
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs()
+        )
+
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+
+            # Copy attributes and add new linearity
+            attributes = feature.attributes()
+            attributes.append(linearity_values[current])
+            output_feature.setAttributes(attributes)
+
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+            # Update progress
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+    
+    def createInstance(self):
+        return self.__class__()
