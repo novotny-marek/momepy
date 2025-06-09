@@ -135,7 +135,7 @@ class fractal_dimension(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
 
-        # Convert QGIS source to GeoDataFrame and calculate fractal dimension
+        # Convert QGIS source to GeoSeries and calculate fractal dimension
         geometry_series = qgs_to_gpd(source)
         fractal_dimension_series = momepy.fractal_dimension(geometry_series)
         fractal_dimension_values = fractal_dimension_series.to_list()
@@ -219,7 +219,7 @@ class square_compactness(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
 
-        # Convert QGIS source to GeoDataFrame and calculate square compactness
+        # Convert QGIS source to GeoSeries and calculate square compactness
         geometry_series = qgs_to_gpd(source)
         square_compactness_series = momepy.square_compactness(geometry_series)
         square_compactness_values = square_compactness_series.to_list()
@@ -313,6 +313,12 @@ class form_factor(QgsProcessingAlgorithm):
         source = self.parameterAsSource(parameters, self.INPUT, context)
         height_field = self.parameterAsString(parameters, self.HEIGHT_FIELD, context)
 
+        # Convert QGIS feature to GeoDataFrame and calculate form factor
+        geometry_dataframe = qgs_to_gpd(source, attribute_fields=[height_field])
+        height = geometry_dataframe[height_field]
+        form_factor_series = momepy.form_factor(geometry_dataframe, height)
+        form_factor_values = form_factor_series.to_list()
+
         # Create output fields (original fields + new form factor field)
         fields = source.fields()
         fields.append(QgsField('form_factor', QVariant.Double))
@@ -335,29 +341,14 @@ class form_factor(QgsProcessingAlgorithm):
         for current, feature in enumerate(features):
             if feedback.isCanceled():
                 break
-
-            geom = feature.geometry()
-            area = geom.area()
-            perimeter = geom.length()
-
-            # Get height from field
-            height = feature[height_field]
-
-            # Calculate form factor
-            if height is None or height <= 0 or area <= 0:
-                form_factor_value = None
-            else:
-                volume = area * height
-                surface = (perimeter * height) + area
-                form_factor_value = surface / (volume ** (2 / 3)) if volume > 0 else None
             
             # Create output feature
             output_feature = QgsFeature(fields)
-            output_feature.setGeometry(geom)
+            output_feature.setGeometry(feature.geometry())
 
             # Copy attributes and add new form factor
             attributes = feature.attributes()
-            attributes.append(form_factor_value)
+            attributes.append(form_factor_values[current])
             output_feature.setAttributes(attributes)
 
             # Add feature to sink
