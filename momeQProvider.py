@@ -1,8 +1,5 @@
 from qgis.core import QgsProcessingProvider
-from .test_algorithm import (
-    facade_ratio_gpd_old,
-    facade_ratio_gpd_new,
-)
+
 from .shape import (
     facade_ratio,
     fractal_dimension,
