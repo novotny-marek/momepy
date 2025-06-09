@@ -10,3 +10,12 @@ analysis of cities from momepy library.
 - [x] Remove pixi environment
 - [x] Fix the `facade_ratio` algorithm
 - [x] Import momepy functions instead of copying them
+
+## Questions
+
+How to implement graphs?
+
+Why is volume and floor_area not calculated from geometry?
+
+How to implement street profile?
+- Result to streets?
