@@ -5,6 +5,8 @@ analysis of cities from momepy library.
 
 ## TODO
 
-- [ ] Remove pixi environment
+- [ ] `Introduce dimension.py`
+- [ ] Add `shape.py` functions relying on `dimension.py`
+- [x] Remove pixi environment
 - [x] Fix the `facade_ratio` algorithm
-- [ ] Import momepy functions instead of copying them
+- [x] Import momepy functions instead of copying them
