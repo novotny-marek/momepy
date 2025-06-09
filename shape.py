@@ -982,3 +982,108 @@ class elongation(QgsProcessingAlgorithm):
     
     def createInstance(self):
         return self.__class__()
+    
+class centroid_corner_distance(QgsProcessingAlgorithm):
+    INPUT = 'INPUT'
+    OUTPUT = 'OUTPUT'
+    EPS_FIELD = 'EPS_FIELD'
+    INTERIORS_FIELD = 'INTERIORS_FIELD'
+
+    def name(self) -> str:
+        return 'centroid_corner_distance'
+    
+    def displayName(self) -> str:
+        return 'Centroid corner distance'
+    
+    def group(self) -> str:
+        return 'Shape'
+    
+    def groupId(self) -> str:
+        return 'shape'
+    
+    def shortHelpString(self) -> str:
+        return 'Calculates the centroid corner distance of each object given its geometry'
+    
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                'Input Layer',
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterNumber(
+                self.EPS_FIELD,
+                'Deviation from 180 degrees to consider a corner, by default 10',
+                type=QgsProcessingParameterNumber.Double,
+                defaultValue=10.0,
+                optional=True
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterBoolean(
+                self.INTERIORS_FIELD,
+                'Include polygon interiors, by default False',
+                defaultValue=False,
+                optional=True
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, 'Output layer')
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+        eps_field = self.parameterAsDouble(parameters, self.EPS_FIELD, context)
+        interiors_field = self.parameterAsBool(parameters, self.INTERIORS_FIELD, context)
+
+        # Convert QGIS feature to GeoSeries and calculate centroid corner distance
+        geometry_series = qgs_to_gpd(source)
+        ccd_series = momepy.centroid_corner_distance(geometry_series, eps = eps_field, include_interiors = interiors_field)
+        ccd_values = ccd_series.to_list()
+
+        fields = source.fields()
+        fields.append(QgsField('ccd', QVariant.Double))
+
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs()
+        )
+
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+
+            # Copy attributes and add new centroid corner distance
+            attributes = feature.attributes()
+            attributes.append(ccd_values[current])
+            output_feature.setAttributes(attributes)
+
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+            # Update progress
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+    
+    def createInstance(self):
+        return self.__class__()
