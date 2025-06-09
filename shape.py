@@ -397,6 +397,12 @@ class circular_compactness(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
 
+        # Convert QGIS feature to GeoSeries and calculate circular compactness
+        geometry_series = qgs_to_gpd(source)
+        circular_compactness_series = momepy.circular_compactness(geometry_series)
+        circular_compactness_values = circular_compactness_series.to_list()
+
+
         # Create output fields (original fields + new circular compactness field)
         fields = source.fields()
         fields.append(QgsField('circular_compactness', QVariant.Double))
@@ -420,24 +426,13 @@ class circular_compactness(QgsProcessingAlgorithm):
             if feedback.isCanceled():
                 break
 
-            geom = feature.geometry()
-            area = geom.area()
-
-            # Calculate circular compactness
-            circle_geom, circle_center, circle_radius = geom.minimalEnclosingCircle()
-
-            if circle_radius > 0:
-                circular_compactness = area / (np.pi * circle_radius ** 2)
-            else:
-                circular_compactness = 0
-
             # Create output feature
             output_feature = QgsFeature(fields)
-            output_feature.setGeometry(geom)
+            output_feature.setGeometry(feature.geometry())
 
             # Copy attributes and add new circular compactness
             attributes = feature.attributes()
-            attributes.append(circular_compactness)
+            attributes.append(circular_compactness_values[current])
             output_feature.setAttributes(attributes)
 
             # Add feature to sink
