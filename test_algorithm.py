@@ -1,9 +1,10 @@
 import geopandas as gpd
 import numpy as np
 import shapely
+import momepy
 
 from PyQt5.QtCore import QVariant
-from .utils import to_gdf
+from .utils import (to_gdf, qgs_to_gpd)
 from qgis.core import (
     QgsField,
     QgsFeature,
@@ -122,9 +123,9 @@ class facade_ratio_gpd_new(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
 
-        geometry = to_gdf(source)
+        geometry_series = qgs_to_gpd(source)
 
-        facade_ratio_series = geometry.area / geometry.length
+        facade_ratio_series = momepy.facade_ratio(geometry_series)
 
         fields = source.fields()
         fields.append(QgsField('facade_ratio', QVariant.Double))
