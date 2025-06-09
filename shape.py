@@ -1,5 +1,7 @@
 import numpy as np
+import momepy
 
+from .utils import qgs_to_gpd
 from PyQt5.QtCore import QVariant
 from qgis.core import (
     QgsField,
@@ -48,6 +50,11 @@ class facade_ratio(QgsProcessingAlgorithm):
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Convert QGIS source to GeoSeries and calculate facade ratio
+        geometry_series = qgs_to_gpd(source)
+        facade_ratio_series = momepy.facade_ratio(geometry_series)
+        facade_ratio_values = facade_ratio_series.to_list()
     
         # Create output fields (original fields + new ratio field)
         fields = source.fields()
@@ -71,22 +78,14 @@ class facade_ratio(QgsProcessingAlgorithm):
         for current, feature in enumerate(features):
             if feedback.isCanceled():
                 break
-                
-            # Get geometry and calculate facade ratio directly with QGIS geometry
-            geom = feature.geometry()
-            area = geom.area()
-            perimeter = geom.length()
-            
-            # Calculate facade ratio (avoid division by zero)
-            facade_ratio = area / perimeter if perimeter > 0 else 0.0
             
             # Create output feature
             output_feature = QgsFeature(fields)
-            output_feature.setGeometry(geom)
+            output_feature.setGeometry(feature.geometry())
             
             # Copy attributes and add new ratio
             attributes = feature.attributes()
-            attributes.append(facade_ratio)
+            attributes.append(facade_ratio_values[current])
             output_feature.setAttributes(attributes)
             
             # Add feature to sink
