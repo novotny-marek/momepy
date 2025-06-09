@@ -134,6 +134,11 @@ class fractal_dimension(QgsProcessingAlgorithm):
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Convert QGIS source to GeoDataFrame and calculate fractal dimension
+        geometry_series = qgs_to_gpd(source)
+        fractal_dimension_series = momepy.fractal_dimension(geometry_series)
+        fractal_dimension_values = fractal_dimension_series.to_list()
     
         # Create output fields (original fields + new ratio field)
         fields = source.fields()
@@ -157,22 +162,14 @@ class fractal_dimension(QgsProcessingAlgorithm):
         for current, feature in enumerate(features):
             if feedback.isCanceled():
                 break
-                
-            # Get geometry and calculate facade ratio directly with QGIS geometry
-            geom = feature.geometry()
-            area = geom.area()
-            perimeter = geom.length()
-            
-            # Calculate fractal dimension
-            fractal_dimension = (2 * np.log(perimeter / 4)) / np.log(area)
-            
+                         
             # Create output feature
             output_feature = QgsFeature(fields)
-            output_feature.setGeometry(geom)
+            output_feature.setGeometry(feature.geometry())
             
             # Copy attributes and add new ratio
             attributes = feature.attributes()
-            attributes.append(fractal_dimension)
+            attributes.append(fractal_dimension_values[current])
             output_feature.setAttributes(attributes)
             
             # Add feature to sink
@@ -221,6 +218,11 @@ class square_compactness(QgsProcessingAlgorithm):
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Convert QGIS source to GeoDataFrame and calculate square compactness
+        geometry_series = qgs_to_gpd(source)
+        square_compactness_series = momepy.square_compactness(geometry_series)
+        square_compactness_values = square_compactness_series.to_list()
     
         # Create output fields (original fields + new ratio field)
         fields = source.fields()
@@ -244,22 +246,14 @@ class square_compactness(QgsProcessingAlgorithm):
         for current, feature in enumerate(features):
             if feedback.isCanceled():
                 break
-                
-            # Get geometry and calculate facade ratio directly with QGIS geometry
-            geom = feature.geometry()
-            area = geom.area()
-            perimeter = geom.length()
-            
-            # Calculate fractal dimension
-            square_compactness = ((np.sqrt(area) * 4) / perimeter) ** 2
-            
+
             # Create output feature
             output_feature = QgsFeature(fields)
-            output_feature.setGeometry(geom)
+            output_feature.setGeometry(feature.geometry())
             
             # Copy attributes and add new ratio
             attributes = feature.attributes()
-            attributes.append(square_compactness)
+            attributes.append(square_compactness_values[current])
             output_feature.setAttributes(attributes)
             
             # Add feature to sink
