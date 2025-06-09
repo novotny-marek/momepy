@@ -10,21 +10,12 @@ from .shape import (
     form_factor,
     circular_compactness,
     convexity,
+    rectangularity,
+    corners,
 )
 
 class MomeQProvider(QgsProcessingProvider):
     """ The """
-    def loadAlgorithms(self):
-        """ Load each algorithm into current provider. """
-        self.addAlgorithm(facade_ratio_gpd_old())
-        self.addAlgorithm(facade_ratio_gpd_new())
-        self.addAlgorithm(facade_ratio())
-        self.addAlgorithm(fractal_dimension())
-        self.addAlgorithm(square_compactness())
-        self.addAlgorithm(form_factor())
-        self.addAlgorithm(circular_compactness())
-        self.addAlgorithm(convexity())
-
     def id(self) -> str:
         """ The id of the plugin used for identifying the provider. """
         return 'momeq'
@@ -32,3 +23,24 @@ class MomeQProvider(QgsProcessingProvider):
     def name(self) -> str:
         """ Human friendly name of the plugin in Processing. """
         return self.tr('momeQ')
+    
+    def getAlgorithms(self):
+        algorithms = [
+            facade_ratio(),
+            fractal_dimension(),
+            square_compactness(),
+            form_factor(),
+            circular_compactness(),
+            convexity(),
+            rectangularity(),
+            corners(),
+            facade_ratio_gpd_new(),
+            facade_ratio_gpd_old(),
+        ]
+        return algorithms
+    
+    def loadAlgorithms(self):
+        """ Load each algorithm into current provider. """
+        self.algorithms = self.getAlgorithms()
+        for a in self.algorithms:
+            self.addAlgorithm(a)
