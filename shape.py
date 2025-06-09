@@ -378,7 +378,7 @@ class circular_compactness(QgsProcessingAlgorithm):
         return 'shape'
     
     def shortHelpString(self) -> str:
-        return 'Calculated the circular compactness of each object given its geometry'
+        return 'Calculates the circular compactness of each object given its geometry'
     
     def initAlgorithm(self, configuration=None):
         self.addParameter(
@@ -593,7 +593,7 @@ class rectangularity(QgsProcessingAlgorithm):
             output_feature = QgsFeature(fields)
             output_feature.setGeometry(feature.geometry())
 
-            # Copy attributes and add new convexity
+            # Copy attributes and add new rectangularity
             attributes = feature.attributes()
             attributes.append(rectangularity_values[current])
             output_feature.setAttributes(attributes)
