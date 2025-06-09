@@ -18,7 +18,6 @@ from qgis.core import (
 class facade_ratio(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
-    FIELD_NAME = 'FIELD_NAME'
 
     def name(self) -> str:
         return 'facade_ratio'
@@ -102,7 +101,6 @@ class facade_ratio(QgsProcessingAlgorithm):
 class fractal_dimension(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
-    FIELD_NAME = 'FIELD_NAME'
 
     def name(self) -> str:
         return 'fractal_dimension'
@@ -186,7 +184,6 @@ class fractal_dimension(QgsProcessingAlgorithm):
 class square_compactness(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
-    FIELD_NAME = 'FIELD_NAME'
 
     def name(self) -> str:
         return 'square_compactness'
