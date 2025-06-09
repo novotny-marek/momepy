@@ -481,6 +481,11 @@ class convexity(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
 
+        # Convert QGIS feature to GeoSeries and calculate convexity
+        geometry_series = qgs_to_gpd(source)
+        convexity_series = momepy.convexity(geometry_series)
+        convexity_values = convexity_series.to_list()
+
         fields = source.fields()
         fields.append(QgsField('convexity', QVariant.Double))
 
@@ -503,20 +508,13 @@ class convexity(QgsProcessingAlgorithm):
             if feedback.isCanceled():
                 break
 
-            geom = feature.geometry()
-            area = geom.area()
-            hull_area = geom.convexHull().area()
-
-            # Calculate convexity
-            convexity = area / hull_area
-
             # Create output feature
             output_feature = QgsFeature(fields)
-            output_feature.setGeometry(geom)
+            output_feature.setGeometry(feature.geometry())
 
             # Copy attributes and add new convexity
             attributes = feature.attributes()
-            attributes.append(convexity)
+            attributes.append(convexity_values[current])
             output_feature.setAttributes(attributes)
 
             # Add feature to sink
