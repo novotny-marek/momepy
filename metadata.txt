@@ -1,9 +1,14 @@
 [general]
-name=momeQ
+name=MomeQ
 description=Toolkit for morphometric analysis 
-about=momeQ is a QGIS plugin implementing selected functions for morphometric analysis of cities from momepy library.
+about=MomeQ implements selected functions for morphometric analysis of cities from momepy library.
 category=Plugins
 version=0.1.0
 qgisMinimumVersion=3.4
+
+author=Marek Novotný
+email=marek.novotny@natur.cuni.cz
+
+repository=https://github.com/novotny-marek/momeQ
 
 experimental=True
