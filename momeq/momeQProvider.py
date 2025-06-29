@@ -9,6 +9,8 @@ from .shape import (
     convexity,
     rectangularity,
     corners,
+    shape_index,
+    courtyard_index,
 )
 
 class MomeQProvider(QgsProcessingProvider):
@@ -31,6 +33,8 @@ class MomeQProvider(QgsProcessingProvider):
             convexity(),
             rectangularity(),
             corners(),
+            shape_index(),
+            courtyard_index(),
         ]
         return algorithms
     
