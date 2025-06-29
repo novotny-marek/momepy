@@ -1,7 +1,8 @@
 from qgis.core import QgsApplication
 from .momeQProvider import MomeQProvider
 
-class MomeQPluginProvider():
+
+class MomeQPluginProvider:
     def __init__(self):
         self.provider = MomeQProvider()
 

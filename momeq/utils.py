@@ -1,6 +1,7 @@
 import geopandas as gpd
 import shapely as shp
 
+
 def to_gdf(layer):
     """Convert QGIS layer to GeoDataFrame"""
     features = []
@@ -10,18 +11,21 @@ def to_gdf(layer):
             # Convert QGIS geometry to Shapely geometry
             geom_wkt = geom.asWkt()
             shapely_geom = shp.wkt.loads(geom_wkt)
-            
-            features.append({
-                'geometry': shapely_geom,
-                **{field.name(): feature[field.name()] for field in layer.fields()}
-            })
-    
+
+            features.append(
+                {
+                    "geometry": shapely_geom,
+                    **{field.name(): feature[field.name()] for field in layer.fields()},
+                }
+            )
+
     if features:
         return gpd.GeoDataFrame(features, crs=layer.sourceCrs().authid())
     else:
         return gpd.GeoDataFrame()
-    
-def qgs_to_gpd(source, attribute_fields = None):
+
+
+def qgs_to_gpd(source, attribute_fields=None):
     """
     Convert QGIS feature soure to Geopandas GeoSeries
 
@@ -67,12 +71,12 @@ def qgs_to_gpd(source, attribute_fields = None):
                 else:
                     # Field not found, add None
                     attributes_data[field_name].append(None)
-                
+
     # Create appropriate return type
     if attribute_fields:
         # Create GeoDataFrame with attributes
         gdf_data = attributes_data.copy()
-        gdf_data['geometry'] = geometries
+        gdf_data["geometry"] = geometries
         return gpd.GeoDataFrame(gdf_data)
     else:
         # Return just GeoSeries
