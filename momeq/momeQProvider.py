@@ -1,16 +1,16 @@
 from qgis.core import QgsProcessingProvider
 
 from .shape import (
-    facade_ratio,
-    fractal_dimension,
-    square_compactness,
-    form_factor,
-    circular_compactness,
-    convexity,
-    rectangularity,
-    corners,
-    shape_index,
-    courtyard_index,
+    FacadeRatio,
+    FractalDimension,
+    SquareCompactness,
+    FormFactor,
+    CircularCompactness,
+    Convexity,
+    Rectangularity,
+    Corners,
+    ShapeIndex,
+    CourtyardIndex,
 )
 from .dimension import (
     courtyard_area,
@@ -30,16 +30,16 @@ class MomeQProvider(QgsProcessingProvider):
     
     def getAlgorithms(self):
         algorithms = [
-            facade_ratio(),
-            fractal_dimension(),
-            square_compactness(),
-            form_factor(),
-            circular_compactness(),
-            convexity(),
-            rectangularity(),
-            corners(),
-            shape_index(),
-            courtyard_index(),
+            FacadeRatio(),
+            FractalDimension(),
+            SquareCompactness(),
+            FormFactor(),
+            CircularCompactness(),
+            Convexity(),
+            Rectangularity(),
+            Corners(),
+            ShapeIndex(),
+            CourtyardIndex(),
             courtyard_area(),
             longest_axis_length(),
             street_profile(),

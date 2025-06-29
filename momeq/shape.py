@@ -15,7 +15,7 @@ from qgis.core import (
     QgsProcessingParameterBoolean
 )
 
-class facade_ratio(QgsProcessingAlgorithm):
+class FacadeRatio(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -98,7 +98,7 @@ class facade_ratio(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class fractal_dimension(QgsProcessingAlgorithm):
+class FractalDimension(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -181,7 +181,7 @@ class fractal_dimension(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class square_compactness(QgsProcessingAlgorithm):
+class SquareCompactness(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -264,7 +264,7 @@ class square_compactness(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class form_factor(QgsProcessingAlgorithm):
+class FormFactor(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     HEIGHT_FIELD = 'HEIGHT_FIELD'
@@ -359,7 +359,7 @@ class form_factor(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class circular_compactness(QgsProcessingAlgorithm):
+class CircularCompactness(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -443,7 +443,7 @@ class circular_compactness(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class convexity(QgsProcessingAlgorithm):
+class Convexity(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -525,7 +525,7 @@ class convexity(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class rectangularity(QgsProcessingAlgorithm):
+class Rectangularity(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -607,7 +607,7 @@ class rectangularity(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class corners(QgsProcessingAlgorithm):
+class Corners(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     EPS_FIELD = 'EPS_FIELD'
@@ -712,7 +712,7 @@ class corners(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class squareness(QgsProcessingAlgorithm):
+class Squareness(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     EPS_FIELD = 'EPS_FIELD'
@@ -817,7 +817,7 @@ class squareness(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class equivalent_rectangular_index(QgsProcessingAlgorithm):
+class EquivalentRectangularIndex(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -899,7 +899,7 @@ class equivalent_rectangular_index(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class elongation(QgsProcessingAlgorithm):
+class Elongation(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -981,7 +981,7 @@ class elongation(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class centroid_corner_distance(QgsProcessingAlgorithm):
+class CentroidCornerDistance(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     EPS_FIELD = 'EPS_FIELD'
@@ -1086,7 +1086,7 @@ class centroid_corner_distance(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class linearity(QgsProcessingAlgorithm):
+class Linearity(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -1168,7 +1168,7 @@ class linearity(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class courtyard_index(QgsProcessingAlgorithm):
+class CourtyardIndex(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     COURTYARD_AREA_FIELD = 'COURTYARD_AREA_FIELD'
@@ -1263,7 +1263,7 @@ class courtyard_index(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
 
-class shape_index(QgsProcessingAlgorithm):
+class ShapeIndex(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     LONGEST_AXIS_FIELD = 'LONGEST_AXIS_FIELD'
