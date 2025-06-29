@@ -12,6 +12,11 @@ from .shape import (
     shape_index,
     courtyard_index,
 )
+from .dimension import (
+    courtyard_area,
+    longest_axis_length,
+    street_profile,
+)
 
 class MomeQProvider(QgsProcessingProvider):
     """ The """
@@ -35,6 +40,9 @@ class MomeQProvider(QgsProcessingProvider):
             corners(),
             shape_index(),
             courtyard_index(),
+            courtyard_area(),
+            longest_axis_length(),
+            street_profile(),
         ]
         return algorithms
     
