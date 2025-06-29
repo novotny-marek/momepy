@@ -1,4 +1,3 @@
-import numpy as np
 import momepy
 
 from .utils import qgs_to_gpd
@@ -8,7 +7,6 @@ from qgis.core import (
     QgsFeature,
     QgsProcessing,
     QgsFeatureSink,
-    QgsGeometry,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterFeatureSink,
