@@ -13,9 +13,9 @@ from .shape import (
     CourtyardIndex,
 )
 from .dimension import (
-    courtyard_area,
-    longest_axis_length,
-    street_profile,
+    CourtyardArea,
+    LongestAxisLength,
+    StreetProfile,
 )
 
 class MomeQProvider(QgsProcessingProvider):
@@ -40,9 +40,9 @@ class MomeQProvider(QgsProcessingProvider):
             Corners(),
             ShapeIndex(),
             CourtyardIndex(),
-            courtyard_area(),
-            longest_axis_length(),
-            street_profile(),
+            CourtyardArea(),
+            LongestAxisLength(),
+            StreetProfile(),
         ]
         return algorithms
     

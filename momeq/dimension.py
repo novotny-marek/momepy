@@ -16,7 +16,7 @@ from qgis.core import (
     QgsProcessingParameterBoolean
 )
 
-class courtyard_area(QgsProcessingAlgorithm):
+class CourtyardArea(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -99,7 +99,7 @@ class courtyard_area(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class longest_axis_length(QgsProcessingAlgorithm):
+class LongestAxisLength(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
@@ -182,8 +182,8 @@ class longest_axis_length(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
     
-class street_profile(QgsProcessingAlgorithm):
-    INPUT_BUILDINGS = 'INPUT_BUILDINGS'
+class StreetProfile(QgsProcessingAlgorithm):
+    INPUT = 'INPUT_BUILDINGS'
     INPUT_STREETS = 'INPUT_STREETS'
     OUTPUT = 'OUTPUT'
     DISTANCE_FIELD = 'DISTANCE_FIELD'
@@ -208,7 +208,7 @@ class street_profile(QgsProcessingAlgorithm):
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
-                self.INPUT_BUILDINGS,
+                self.INPUT,
                 'Input buildings layer',
                 [QgsProcessing.SourceType.VectorPolygon],
             )
@@ -258,7 +258,7 @@ class street_profile(QgsProcessingAlgorithm):
         )
 
     def processAlgorithm(self, parameters, context, feedback):
-        polygon_source = self.parameterAsSource(parameters, self.INPUT_BUILDINGS, context)
+        polygon_source = self.parameterAsSource(parameters, self.INPUT, context)
         line_source = self.parameterAsSource(parameters, self.INPUT_STREETS, context)
         distance_field = self.parameterAsDouble(parameters, self.DISTANCE_FIELD, context)
         tick_length_field = self.parameterAsDouble(parameters, self.TICK_LENGTH_FIELD, context)
@@ -268,9 +268,9 @@ class street_profile(QgsProcessingAlgorithm):
         polygon_geometry_series = qgs_to_gpd(polygon_source)
         line_geometry_series = qgs_to_gpd(line_source)
         street_profile_series = momepy.street_profile(line_geometry_series, polygon_geometry_series, distance_field, tick_length_field)
-        courtyard_area_values = courtyard_area_series.to_list()
+        street_profile_values = street_profile_series.to_list()
     
-        # Create output fields (original fields + new courtyard area field)
+        # Create output fields (original fields + new street profile field)
         fields = source.fields()
         fields.append(QgsField('courtyard_area', QVariant.Double))
     
@@ -297,9 +297,9 @@ class street_profile(QgsProcessingAlgorithm):
             output_feature = QgsFeature(fields)
             output_feature.setGeometry(feature.geometry())
             
-            # Copy attributes and add new ratio
+            # Copy attributes and add new street profile
             attributes = feature.attributes()
-            attributes.append(courtyard_area_values[current])
+            attributes.append(street_profile_values[current])
             output_feature.setAttributes(attributes)
             
             # Add feature to sink
