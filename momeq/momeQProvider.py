@@ -31,8 +31,6 @@ class MomeQProvider(QgsProcessingProvider):
             convexity(),
             rectangularity(),
             corners(),
-            facade_ratio_gpd_new(),
-            facade_ratio_gpd_old(),
         ]
         return algorithms
     
