@@ -7,13 +7,11 @@ from qgis.core import (
     QgsFeature,
     QgsProcessing,
     QgsFeatureSink,
-    QgsGeometry,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterField,
     QgsProcessingParameterNumber,
-    QgsProcessingParameterBoolean,
 )
 
 
@@ -279,11 +277,12 @@ class StreetProfile(QgsProcessingAlgorithm):
             polygon_geometry_series,
             distance_field,
             tick_length_field,
+            height_field,
         )
         street_profile_values = street_profile_series.to_list()
 
         # Create output fields (original fields + new street profile field)
-        fields = source.fields()
+        fields = polygon_source.fields()
         fields.append(QgsField("courtyard_area", QVariant.Double))
 
         # Create sink
@@ -292,13 +291,17 @@ class StreetProfile(QgsProcessingAlgorithm):
             self.OUTPUT,
             context,
             fields,
-            source.wkbType(),
-            source.sourceCrs(),
+            polygon_source.wkbType(),
+            polygon_source.sourceCrs(),
         )
 
         # Get features from source
-        features = source.getFeatures()
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
+        features = polygon_source.getFeatures()
+        total = (
+            100.0 / polygon_source.featureCount()
+            if polygon_source.featureCount()
+            else 0
+        )
 
         # Process each feature directly
         for current, feature in enumerate(features):
