@@ -13,6 +13,8 @@ from .shape import (
     CourtyardIndex,
     Squareness,
     Linearity,
+    Elongation,
+    EquivalentRectangularIndex,
 )
 from .dimension import (
     CourtyardArea,
@@ -49,6 +51,8 @@ class MomeQProvider(QgsProcessingProvider):
             StreetProfile(),
             Squareness(),
             Linearity(),
+            Elongation(),
+            EquivalentRectangularIndex(),
         ]
         return algorithms
 
