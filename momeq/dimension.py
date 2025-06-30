@@ -15,6 +15,14 @@ from qgis.core import (
 )
 
 
+class Volume(QgsProcessingAlgorithm):
+    pass
+
+
+class FloorArea(QgsProcessingAlgorithm):
+    pass
+
+
 class CourtyardArea(QgsProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
@@ -183,6 +191,10 @@ class LongestAxisLength(QgsProcessingAlgorithm):
         return self.__class__()
 
 
+class PerimeterWall(QgsProcessingAlgorithm):
+    pass
+
+
 class StreetProfile(QgsProcessingAlgorithm):
     INPUT = "INPUT_BUILDINGS"
     INPUT_STREETS = "INPUT_STREETS"
@@ -327,3 +339,7 @@ class StreetProfile(QgsProcessingAlgorithm):
 
     def createInstance(self):
         return self.__class__()
+
+
+class WeightedCharacter(QgsProcessingAlgorithm):
+    pass
