@@ -21,6 +21,10 @@ from .dimension import (
     LongestAxisLength,
     StreetProfile,
 )
+from .elements import (
+    BufferedLimit,
+    MorphologicalTessellation,
+)
 
 
 class MomeQProvider(QgsProcessingProvider):
@@ -53,6 +57,8 @@ class MomeQProvider(QgsProcessingProvider):
             Linearity(),
             Elongation(),
             EquivalentRectangularIndex(),
+            BufferedLimit(),
+            MorphologicalTessellation(),
         ]
         return algorithms
 
