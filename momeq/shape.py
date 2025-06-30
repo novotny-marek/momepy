@@ -16,15 +16,16 @@ from qgis.core import (
 )
 
 
-class FacadeRatio(QgsProcessingAlgorithm):
+class FormFactor(QgsProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
+    HEIGHT_FIELD = "HEIGHT_FIELD"
 
     def name(self) -> str:
-        return "facade_ratio"
+        return "form_factor"
 
     def displayName(self) -> str:
-        return "Facade ratio"
+        return "Form factor"
 
     def group(self) -> str:
         return "Shape"
@@ -33,9 +34,9 @@ class FacadeRatio(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the facade ratio of each object given its geometry"
+        return "Calculates the form factor of each object given its geometry and height"
 
-    def initAlgorithm(self, config=None):
+    def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
@@ -45,20 +46,31 @@ class FacadeRatio(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
+            QgsProcessingParameterField(
+                self.HEIGHT_FIELD,
+                "Height field",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric,
+            )
+        )
+
+        self.addParameter(
             QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
         )
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
+        height_field = self.parameterAsString(parameters, self.HEIGHT_FIELD, context)
 
-        # Convert QGIS source to GeoSeries and calculate facade ratio
-        geometry_series = qgs_to_gpd(source)
-        facade_ratio_series = momepy.facade_ratio(geometry_series)
-        facade_ratio_values = facade_ratio_series.to_list()
+        # Convert QGIS feature to GeoDataFrame and calculate form factor
+        geometry_dataframe = qgs_to_gpd(source, attribute_fields=[height_field])
+        height = geometry_dataframe[height_field]
+        form_factor_series = momepy.form_factor(geometry_dataframe, height)
+        form_factor_values = form_factor_series.to_list()
 
-        # Create output fields (original fields + new ratio field)
+        # Create output fields (original fields + new form factor field)
         fields = source.fields()
-        fields.append(QgsField("facade_ratio", QVariant.Double))
+        fields.append(QgsField("form_factor", QVariant.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -83,9 +95,9 @@ class FacadeRatio(QgsProcessingAlgorithm):
             output_feature = QgsFeature(fields)
             output_feature.setGeometry(feature.geometry())
 
-            # Copy attributes and add new ratio
+            # Copy attributes and add new form factor
             attributes = feature.attributes()
-            attributes.append(facade_ratio_values[current])
+            attributes.append(form_factor_values[current])
             output_feature.setAttributes(attributes)
 
             # Add feature to sink
@@ -98,7 +110,7 @@ class FacadeRatio(QgsProcessingAlgorithm):
 
     def createInstance(self):
         return self.__class__()
-
+    
 
 class FractalDimension(QgsProcessingAlgorithm):
     INPUT = "INPUT"
@@ -184,15 +196,15 @@ class FractalDimension(QgsProcessingAlgorithm):
         return self.__class__()
 
 
-class SquareCompactness(QgsProcessingAlgorithm):
+class FacadeRatio(QgsProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
 
     def name(self) -> str:
-        return "square_compactness"
+        return "facade_ratio"
 
     def displayName(self) -> str:
-        return "Square compactness"
+        return "Facade ratio"
 
     def group(self) -> str:
         return "Shape"
@@ -201,9 +213,9 @@ class SquareCompactness(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the square compactness of each object given its geometry"
+        return "Calculates the facade ratio of each object given its geometry"
 
-    def initAlgorithm(self, configuration=None):
+    def initAlgorithm(self, config=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
@@ -219,14 +231,14 @@ class SquareCompactness(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
 
-        # Convert QGIS source to GeoSeries and calculate square compactness
+        # Convert QGIS source to GeoSeries and calculate facade ratio
         geometry_series = qgs_to_gpd(source)
-        square_compactness_series = momepy.square_compactness(geometry_series)
-        square_compactness_values = square_compactness_series.to_list()
+        facade_ratio_series = momepy.facade_ratio(geometry_series)
+        facade_ratio_values = facade_ratio_series.to_list()
 
         # Create output fields (original fields + new ratio field)
         fields = source.fields()
-        fields.append(QgsField("square_compactness", QVariant.Double))
+        fields.append(QgsField("facade_ratio", QVariant.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -253,103 +265,7 @@ class SquareCompactness(QgsProcessingAlgorithm):
 
             # Copy attributes and add new ratio
             attributes = feature.attributes()
-            attributes.append(square_compactness_values[current])
-            output_feature.setAttributes(attributes)
-
-            # Add feature to sink
-            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
-
-            # Update progress
-            feedback.setProgress(int(current * total))
-
-        return {self.OUTPUT: dest_id}
-
-    def createInstance(self):
-        return self.__class__()
-
-
-class FormFactor(QgsProcessingAlgorithm):
-    INPUT = "INPUT"
-    OUTPUT = "OUTPUT"
-    HEIGHT_FIELD = "HEIGHT_FIELD"
-
-    def name(self) -> str:
-        return "form_factor"
-
-    def displayName(self) -> str:
-        return "Form factor"
-
-    def group(self) -> str:
-        return "Shape"
-
-    def groupId(self) -> str:
-        return "shape"
-
-    def shortHelpString(self) -> str:
-        return "Calculates the form factor of each object given its geometry and height"
-
-    def initAlgorithm(self, configuration=None):
-        self.addParameter(
-            QgsProcessingParameterFeatureSource(
-                self.INPUT,
-                "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterField(
-                self.HEIGHT_FIELD,
-                "Height field",
-                parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
-        )
-
-    def processAlgorithm(self, parameters, context, feedback):
-        source = self.parameterAsSource(parameters, self.INPUT, context)
-        height_field = self.parameterAsString(parameters, self.HEIGHT_FIELD, context)
-
-        # Convert QGIS feature to GeoDataFrame and calculate form factor
-        geometry_dataframe = qgs_to_gpd(source, attribute_fields=[height_field])
-        height = geometry_dataframe[height_field]
-        form_factor_series = momepy.form_factor(geometry_dataframe, height)
-        form_factor_values = form_factor_series.to_list()
-
-        # Create output fields (original fields + new form factor field)
-        fields = source.fields()
-        fields.append(QgsField("form_factor", QVariant.Double))
-
-        # Create sink
-        (sink, dest_id) = self.parameterAsSink(
-            parameters,
-            self.OUTPUT,
-            context,
-            fields,
-            source.wkbType(),
-            source.sourceCrs(),
-        )
-
-        # Get features from source
-        features = source.getFeatures()
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
-
-        # Process each feature directly
-        for current, feature in enumerate(features):
-            if feedback.isCanceled():
-                break
-
-            # Create output feature
-            output_feature = QgsFeature(fields)
-            output_feature.setGeometry(feature.geometry())
-
-            # Copy attributes and add new form factor
-            attributes = feature.attributes()
-            attributes.append(form_factor_values[current])
+            attributes.append(facade_ratio_values[current])
             output_feature.setAttributes(attributes)
 
             # Add feature to sink
@@ -448,6 +364,90 @@ class CircularCompactness(QgsProcessingAlgorithm):
         return self.__class__()
 
 
+class SquareCompactness(QgsProcessingAlgorithm):
+    INPUT = "INPUT"
+    OUTPUT = "OUTPUT"
+
+    def name(self) -> str:
+        return "square_compactness"
+
+    def displayName(self) -> str:
+        return "Square compactness"
+
+    def group(self) -> str:
+        return "Shape"
+
+    def groupId(self) -> str:
+        return "shape"
+
+    def shortHelpString(self) -> str:
+        return "Calculates the square compactness of each object given its geometry"
+
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                "Input layer",
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Convert QGIS source to GeoSeries and calculate square compactness
+        geometry_series = qgs_to_gpd(source)
+        square_compactness_series = momepy.square_compactness(geometry_series)
+        square_compactness_values = square_compactness_series.to_list()
+
+        # Create output fields (original fields + new ratio field)
+        fields = source.fields()
+        fields.append(QgsField("square_compactness", QVariant.Double))
+
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs(),
+        )
+
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+
+            # Copy attributes and add new ratio
+            attributes = feature.attributes()
+            attributes.append(square_compactness_values[current])
+            output_feature.setAttributes(attributes)
+
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+            # Update progress
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+
+    def createInstance(self):
+        return self.__class__()
+
+
 class Convexity(QgsProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
@@ -517,6 +517,106 @@ class Convexity(QgsProcessingAlgorithm):
             # Copy attributes and add new convexity
             attributes = feature.attributes()
             attributes.append(convexity_values[current])
+            output_feature.setAttributes(attributes)
+
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+            # Update progress
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+
+    def createInstance(self):
+        return self.__class__()
+    
+
+class CourtyardIndex(QgsProcessingAlgorithm):
+    INPUT = "INPUT"
+    OUTPUT = "OUTPUT"
+    COURTYARD_AREA_FIELD = "COURTYARD_AREA_FIELD"
+
+    def name(self) -> str:
+        return "courtyard_index"
+
+    def displayName(self) -> str:
+        return "Courtyard index"
+
+    def group(self) -> str:
+        return "Shape"
+
+    def groupId(self) -> str:
+        return "shape"
+
+    def shortHelpString(self) -> str:
+        return "Calculates the courtyard index of each object given its geometry."
+
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                "Input layer",
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.COURTYARD_AREA_FIELD,
+                "Courtyard area field",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric,
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+        courtyard_area_field = self.parameterAsString(
+            parameters, self.COURTYARD_AREA_FIELD, context
+        )
+
+        # Convert QGIS feature to GeoDataFrame and calculate courtyard index
+        geometry_dataframe = qgs_to_gpd(source, attribute_fields=[courtyard_area_field])
+        courtyard_area = geometry_dataframe[courtyard_area_field]
+        courtyard_index_series = momepy.courtyard_index(
+            geometry_dataframe, courtyard_area=courtyard_area
+        )
+        courtyard_index_values = courtyard_index_series.to_list()
+
+        # Create output fields (original fields + new courtyard index field)
+        fields = source.fields()
+        fields.append(QgsField("courtyard_index", QVariant.Double))
+
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs(),
+        )
+
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+
+            # Copy attributes and add new courtyard index
+            attributes = feature.attributes()
+            attributes.append(courtyard_index_values[current])
             output_feature.setAttributes(attributes)
 
             # Add feature to sink
@@ -600,6 +700,106 @@ class Rectangularity(QgsProcessingAlgorithm):
             # Copy attributes and add new rectangularity
             attributes = feature.attributes()
             attributes.append(rectangularity_values[current])
+            output_feature.setAttributes(attributes)
+
+            # Add feature to sink
+            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
+
+            # Update progress
+            feedback.setProgress(int(current * total))
+
+        return {self.OUTPUT: dest_id}
+
+    def createInstance(self):
+        return self.__class__()
+    
+
+class ShapeIndex(QgsProcessingAlgorithm):
+    INPUT = "INPUT"
+    OUTPUT = "OUTPUT"
+    LONGEST_AXIS_FIELD = "LONGEST_AXIS_FIELD"
+
+    def name(self) -> str:
+        return "shape_index"
+
+    def displayName(self) -> str:
+        return "Shape index"
+
+    def group(self) -> str:
+        return "Shape"
+
+    def groupId(self) -> str:
+        return "shape"
+
+    def shortHelpString(self) -> str:
+        return "Calculates the shape index of each object given its geometry."
+
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                "Input layer",
+                [QgsProcessing.SourceType.VectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.LONGEST_AXIS_FIELD,
+                "Longest axis length field",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric,
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        source = self.parameterAsSource(parameters, self.INPUT, context)
+        longest_axis_field = self.parameterAsString(
+            parameters, self.LONGEST_AXIS_FIELD, context
+        )
+
+        # Convert QGIS feature to GeoDataFrame and calculate shape index
+        geometry_dataframe = qgs_to_gpd(source, attribute_fields=[longest_axis_field])
+        longest_axis = geometry_dataframe[longest_axis_field]
+        shape_index_series = momepy.shape_index(
+            geometry_dataframe, longest_axis_length=longest_axis
+        )
+        shape_index_values = shape_index_series.to_list()
+
+        # Create output fields (original fields + new shape index field)
+        fields = source.fields()
+        fields.append(QgsField("shape_index", QVariant.Double))
+
+        # Create sink
+        (sink, dest_id) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            fields,
+            source.wkbType(),
+            source.sourceCrs(),
+        )
+
+        # Get features from source
+        features = source.getFeatures()
+        total = 100.0 / source.featureCount() if source.featureCount() else 0
+
+        # Process each feature directly
+        for current, feature in enumerate(features):
+            if feedback.isCanceled():
+                break
+
+            # Create output feature
+            output_feature = QgsFeature(fields)
+            output_feature.setGeometry(feature.geometry())
+
+            # Copy attributes and add new shape index
+            attributes = feature.attributes()
+            attributes.append(shape_index_values[current])
             output_feature.setAttributes(attributes)
 
             # Add feature to sink
@@ -1195,206 +1395,6 @@ class Linearity(QgsProcessingAlgorithm):
         return self.__class__()
 
 
-class CourtyardIndex(QgsProcessingAlgorithm):
-    INPUT = "INPUT"
-    OUTPUT = "OUTPUT"
-    COURTYARD_AREA_FIELD = "COURTYARD_AREA_FIELD"
-
-    def name(self) -> str:
-        return "courtyard_index"
-
-    def displayName(self) -> str:
-        return "Courtyard index"
-
-    def group(self) -> str:
-        return "Shape"
-
-    def groupId(self) -> str:
-        return "shape"
-
-    def shortHelpString(self) -> str:
-        return "Calculates the courtyard index of each object given its geometry."
-
-    def initAlgorithm(self, configuration=None):
-        self.addParameter(
-            QgsProcessingParameterFeatureSource(
-                self.INPUT,
-                "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterField(
-                self.COURTYARD_AREA_FIELD,
-                "Courtyard area field",
-                parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
-        )
-
-    def processAlgorithm(self, parameters, context, feedback):
-        source = self.parameterAsSource(parameters, self.INPUT, context)
-        courtyard_area_field = self.parameterAsString(
-            parameters, self.COURTYARD_AREA_FIELD, context
-        )
-
-        # Convert QGIS feature to GeoDataFrame and calculate courtyard index
-        geometry_dataframe = qgs_to_gpd(source, attribute_fields=[courtyard_area_field])
-        courtyard_area = geometry_dataframe[courtyard_area_field]
-        courtyard_index_series = momepy.courtyard_index(
-            geometry_dataframe, courtyard_area=courtyard_area
-        )
-        courtyard_index_values = courtyard_index_series.to_list()
-
-        # Create output fields (original fields + new courtyard index field)
-        fields = source.fields()
-        fields.append(QgsField("courtyard_index", QVariant.Double))
-
-        # Create sink
-        (sink, dest_id) = self.parameterAsSink(
-            parameters,
-            self.OUTPUT,
-            context,
-            fields,
-            source.wkbType(),
-            source.sourceCrs(),
-        )
-
-        # Get features from source
-        features = source.getFeatures()
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
-
-        # Process each feature directly
-        for current, feature in enumerate(features):
-            if feedback.isCanceled():
-                break
-
-            # Create output feature
-            output_feature = QgsFeature(fields)
-            output_feature.setGeometry(feature.geometry())
-
-            # Copy attributes and add new courtyard index
-            attributes = feature.attributes()
-            attributes.append(courtyard_index_values[current])
-            output_feature.setAttributes(attributes)
-
-            # Add feature to sink
-            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
-
-            # Update progress
-            feedback.setProgress(int(current * total))
-
-        return {self.OUTPUT: dest_id}
-
-    def createInstance(self):
-        return self.__class__()
-
-
-class ShapeIndex(QgsProcessingAlgorithm):
-    INPUT = "INPUT"
-    OUTPUT = "OUTPUT"
-    LONGEST_AXIS_FIELD = "LONGEST_AXIS_FIELD"
-
-    def name(self) -> str:
-        return "shape_index"
-
-    def displayName(self) -> str:
-        return "Shape index"
-
-    def group(self) -> str:
-        return "Shape"
-
-    def groupId(self) -> str:
-        return "shape"
-
-    def shortHelpString(self) -> str:
-        return "Calculates the shape index of each object given its geometry."
-
-    def initAlgorithm(self, configuration=None):
-        self.addParameter(
-            QgsProcessingParameterFeatureSource(
-                self.INPUT,
-                "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterField(
-                self.LONGEST_AXIS_FIELD,
-                "Longest axis length field",
-                parentLayerParameterName=self.INPUT,
-                type=QgsProcessingParameterField.Numeric,
-            )
-        )
-
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
-        )
-
-    def processAlgorithm(self, parameters, context, feedback):
-        source = self.parameterAsSource(parameters, self.INPUT, context)
-        longest_axis_field = self.parameterAsString(
-            parameters, self.LONGEST_AXIS_FIELD, context
-        )
-
-        # Convert QGIS feature to GeoDataFrame and calculate shape index
-        geometry_dataframe = qgs_to_gpd(source, attribute_fields=[longest_axis_field])
-        longest_axis = geometry_dataframe[longest_axis_field]
-        shape_index_series = momepy.shape_index(
-            geometry_dataframe, longest_axis_length=longest_axis
-        )
-        shape_index_values = shape_index_series.to_list()
-
-        # Create output fields (original fields + new shape index field)
-        fields = source.fields()
-        fields.append(QgsField("shape_index", QVariant.Double))
-
-        # Create sink
-        (sink, dest_id) = self.parameterAsSink(
-            parameters,
-            self.OUTPUT,
-            context,
-            fields,
-            source.wkbType(),
-            source.sourceCrs(),
-        )
-
-        # Get features from source
-        features = source.getFeatures()
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
-
-        # Process each feature directly
-        for current, feature in enumerate(features):
-            if feedback.isCanceled():
-                break
-
-            # Create output feature
-            output_feature = QgsFeature(fields)
-            output_feature.setGeometry(feature.geometry())
-
-            # Copy attributes and add new shape index
-            attributes = feature.attributes()
-            attributes.append(shape_index_values[current])
-            output_feature.setAttributes(attributes)
-
-            # Add feature to sink
-            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
-
-            # Update progress
-            feedback.setProgress(int(current * total))
-
-        return {self.OUTPUT: dest_id}
-
-    def createInstance(self):
-        return self.__class__()
-
-
 class CompactnessWeightedAxis(QgsProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
@@ -1479,4 +1479,5 @@ class CompactnessWeightedAxis(QgsProcessingAlgorithm):
         return self.__class__()
 
 
-# class SunlightOptimised(QgsProcessingAlgorithm): -- uses graph
+class SunlightOptimised(QgsProcessingAlgorithm):
+    pass
