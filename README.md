@@ -1,7 +1,7 @@
-# MomeQ
+# Momepy
 
-MomeQ implements selected functions for morphometric analysis of cities from 
-[momepy](https://docs.momepy.org) library.
+[Momepy](https://docs.momepy.org) - Urban Morphology Measuring Toolkit QGIS 
+plugin.
 
 It is currently in a pre-alpha version.
 

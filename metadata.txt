@@ -1,10 +1,12 @@
 [general]
-name=MomeQ
-description=Toolkit for morphometric analysis 
-about=MomeQ implements selected functions for morphometric analysis of cities from momepy library.
+name=momepy
+description=Urban Morphology Measuring Toolkit 
+about=Momepy is a library for quantitative analysis of urban form - urban morphometrics. It is part of PySAL (Python Spatial Analysis Library) and is built on top of GeoPandas, other PySAL modules, and networkX.
 category=Plugins
 version=0.1.0
 qgisMinimumVersion=3.4
+
+icon=icon/favicon.png
 
 author=Marek Novotný
 email=marek.novotny@natur.cuni.cz
