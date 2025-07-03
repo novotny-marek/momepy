@@ -46,7 +46,7 @@ class BufferedLimit(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Buffered limit")
         )
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -129,7 +129,7 @@ class MorphologicalTessellation(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Morphological tesselation")
         )
 
     def processAlgorithm(self, parameters, context, feedback):
