@@ -54,9 +54,7 @@ class FormFactor(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Form factor")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Form factor"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -110,7 +108,7 @@ class FormFactor(QgsProcessingAlgorithm):
 
     def createInstance(self):
         return self.__class__()
-    
+
 
 class FractalDimension(QgsProcessingAlgorithm):
     INPUT = "INPUT"
@@ -476,9 +474,7 @@ class Convexity(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Convexity")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Convexity"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -529,7 +525,7 @@ class Convexity(QgsProcessingAlgorithm):
 
     def createInstance(self):
         return self.__class__()
-    
+
 
 class CourtyardIndex(QgsProcessingAlgorithm):
     INPUT = "INPUT"
@@ -712,7 +708,7 @@ class Rectangularity(QgsProcessingAlgorithm):
 
     def createInstance(self):
         return self.__class__()
-    
+
 
 class ShapeIndex(QgsProcessingAlgorithm):
     INPUT = "INPUT"
@@ -752,9 +748,7 @@ class ShapeIndex(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Shape index")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Shape index"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -863,9 +857,7 @@ class Corners(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Corners")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Corners"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -973,9 +965,7 @@ class Squareness(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Squareness")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Squareness"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -1063,7 +1053,9 @@ class EquivalentRectangularIndex(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Equivalent rectangular index")
+            QgsProcessingParameterFeatureSink(
+                self.OUTPUT, "Equivalent rectangular index"
+            )
         )
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -1145,9 +1137,7 @@ class Elongation(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Elongation")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Elongation"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -1340,9 +1330,7 @@ class Linearity(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Linearity")
-        )
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, "Linearity"))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
@@ -1412,7 +1400,9 @@ class CompactnessWeightedAxis(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the compactness-weighted axis of each object in a given layer."
+        return (
+            "Calculates the compactness-weighted axis of each object in a given layer."
+        )
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
