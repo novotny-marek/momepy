@@ -1,10 +1,10 @@
 from qgis.core import QgsApplication
-from .momeQProvider import MomeQProvider
+from .momepyProvider import MomepyProvider
 
 
-class MomeQPluginProvider:
+class MomepyPluginProvider:
     def __init__(self):
-        self.provider = MomeQProvider()
+        self.provider = MomepyProvider()
 
     def initGui(self):
         QgsApplication.processingRegistry().addProvider(self.provider)

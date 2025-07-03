@@ -27,7 +27,7 @@ from .elements import (
 )
 
 
-class MomeQProvider(QgsProcessingProvider):
+class MomepyProvider(QgsProcessingProvider):
     """The"""
 
     def id(self) -> str:

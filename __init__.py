@@ -15,8 +15,8 @@
 # along with this program; if not, see
 # <https://www.gnu.org/licenses/>.
 
-from .momepy.momeQPluginProvider import MomeQPluginProvider
+from .momepy.momepyPluginProvider import MomepyPluginProvider
 
 
 def classFactory(iface):
-    return MomeQPluginProvider()
+    return MomepyPluginProvider()
