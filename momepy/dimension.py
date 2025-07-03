@@ -52,7 +52,7 @@ class CourtyardArea(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Courtyard area")
         )
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -136,7 +136,7 @@ class LongestAxisLength(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Longest axis length")
         )
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -267,7 +267,7 @@ class StreetProfile(QgsProcessingAlgorithm):
         )
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Output layer")
+            QgsProcessingParameterFeatureSink(self.OUTPUT, "Street profile")
         )
 
     def processAlgorithm(self, parameters, context, feedback):
