@@ -13,7 +13,6 @@ from qgis.core import (
     QgsProcessingParameterFeatureSink,
     QgsFields,
     QgsWkbTypes,
-    QgsProcessingParameterField,
 )
 
 
