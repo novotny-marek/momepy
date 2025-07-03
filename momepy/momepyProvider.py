@@ -64,6 +64,6 @@ class MomepyProvider(QgsProcessingProvider):
 
     def loadAlgorithms(self):
         """Load each algorithm into current provider."""
-        self.algorithms = self.getAlgorithms()
-        for a in self.algorithms:
+        self.algs = self.getAlgorithms()
+        for a in self.algs:
             self.addAlgorithm(a)
