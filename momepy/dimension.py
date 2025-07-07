@@ -46,7 +46,7 @@ class CourtyardArea(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -130,7 +130,7 @@ class LongestAxisLength(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -230,7 +230,7 @@ class StreetProfile(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT_STREETS,
-                "Input street layer",
+                "Input streets layer",
                 [Qgis.ProcessingSourceType.VectorLine],
             )
         )

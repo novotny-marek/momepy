@@ -39,7 +39,7 @@ class BufferedLimit(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -114,7 +114,7 @@ class MorphologicalTessellation(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )

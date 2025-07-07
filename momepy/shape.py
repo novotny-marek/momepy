@@ -34,13 +34,15 @@ class FormFactor(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the form factor of each object given its geometry and height"
+        return (
+            "Calculates the form factor of each object given its geometry and height."
+        )
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -127,13 +129,13 @@ class FractalDimension(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates fractal dimension based on area and perimeter"
+        return "Calculates fractal dimension based on area and perimeter."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -211,13 +213,13 @@ class FacadeRatio(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the facade ratio of each object given its geometry"
+        return "Calculates the facade ratio of each object given its geometry."
 
     def initAlgorithm(self, config=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -295,13 +297,13 @@ class CircularCompactness(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the circular compactness of each object given its geometry"
+        return "Calculates the circular compactness of each object given its geometry."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -379,13 +381,13 @@ class SquareCompactness(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the square compactness of each object given its geometry"
+        return "Calculates the square compactness of each object given its geometry."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -463,13 +465,13 @@ class Convexity(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the convexity of each object given its geometry"
+        return "Calculates the convexity of each object given its geometry."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input Layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -551,7 +553,7 @@ class CourtyardIndex(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -644,13 +646,13 @@ class Rectangularity(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the rectangularity of each object given its geometry"
+        return "Calculates the rectangularity of each object given its geometry."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input Layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -734,7 +736,7 @@ class ShapeIndex(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -827,13 +829,13 @@ class Corners(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the number of corners of each object given its geometry"
+        return "Calculates the number of corners of each object given its geometry."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input Layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -841,7 +843,7 @@ class Corners(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 self.EPS_FIELD,
-                "Deviation from 180 degrees to consider a corner, by default 10",
+                "Deviation from 180 degrees to consider a corner, by default 10.",
                 type=QgsProcessingParameterNumber.Double,
                 defaultValue=10.0,
                 optional=True,
@@ -851,7 +853,7 @@ class Corners(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterBoolean(
                 self.INTERIORS_FIELD,
-                "Include polygon interiors, by default False",
+                "Include polygon interiors, by default False.",
                 defaultValue=False,
                 optional=True,
             )
@@ -935,13 +937,13 @@ class Squareness(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the squareness of each object given its geometry"
+        return "Calculates the squareness of each object given its geometry."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input Layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -949,7 +951,7 @@ class Squareness(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 self.EPS_FIELD,
-                "Deviation from 180 degrees to consider a corner, by default 10",
+                "Deviation from 180 degrees to consider a corner, by default 10.",
                 type=QgsProcessingParameterNumber.Double,
                 defaultValue=10.0,
                 optional=True,
@@ -959,7 +961,7 @@ class Squareness(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterBoolean(
                 self.INTERIORS_FIELD,
-                "Include polygon interiors, by default False",
+                "Include polygon interiors, by default False.",
                 defaultValue=False,
                 optional=True,
             )
@@ -1041,13 +1043,13 @@ class EquivalentRectangularIndex(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the equivalent rectangular index of each object given its geometry"
+        return "Calculates the equivalent rectangular index of each object given its geometry."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input Layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -1067,7 +1069,7 @@ class EquivalentRectangularIndex(QgsProcessingAlgorithm):
         eri_values = eri_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("eri", QVariant.Double))
+        fields.append(QgsField("equivalent_rectangular_index", QVariant.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -1126,13 +1128,13 @@ class Elongation(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the elongation of each object given its geometry"
+        return "Calculates the elongation of each object given its geometry."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input Layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -1210,14 +1212,14 @@ class CentroidCornerDistance(QgsProcessingAlgorithm):
 
     def shortHelpString(self) -> str:
         return (
-            "Calculates the centroid corner distance of each object given its geometry"
+            "Calculates the centroid corner distance of each object given its geometry."
         )
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input Layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -1225,7 +1227,7 @@ class CentroidCornerDistance(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 self.EPS_FIELD,
-                "Deviation from 180 degrees to consider a corner, by default 10",
+                "Deviation from 180 degrees to consider a corner, by default 10.",
                 type=QgsProcessingParameterNumber.Double,
                 defaultValue=10.0,
                 optional=True,
@@ -1235,7 +1237,7 @@ class CentroidCornerDistance(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterBoolean(
                 self.INTERIORS_FIELD,
-                "Include polygon interiors, by default False",
+                "Include polygon interiors, by default False.",
                 defaultValue=False,
                 optional=True,
             )
@@ -1260,7 +1262,7 @@ class CentroidCornerDistance(QgsProcessingAlgorithm):
         ccd_values = ccd_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("ccd", QVariant.Double))
+        fields.append(QgsField("centroid_corner_distance", QVariant.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -1319,13 +1321,13 @@ class Linearity(QgsProcessingAlgorithm):
         return "shape"
 
     def shortHelpString(self) -> str:
-        return "Calculates the linearity of each LineString"
+        return "Calculates the linearity of each LineString."
 
     def initAlgorithm(self, configuration=None):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input Layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorLine],
             )
         )
@@ -1408,7 +1410,7 @@ class CompactnessWeightedAxis(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input layer",
+                "Input geometry layer",
                 [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
@@ -1427,7 +1429,7 @@ class CompactnessWeightedAxis(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new cwa field)
         fields = source.fields()
-        fields.append(QgsField("cwa", QVariant.Double))
+        fields.append(QgsField("compactness_weighted_axis", QVariant.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
