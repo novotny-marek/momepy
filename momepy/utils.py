@@ -19,7 +19,7 @@ def qgs_to_gpd(source, attribute_fields=None):
     --------
     gpd.GeoSeries or gpd.GeoDataFrame
     """
-    geometries = []
+    wkbs = []
     attributes_data = {}
 
     # Initialize attribute dictionary if needed
@@ -31,9 +31,8 @@ def qgs_to_gpd(source, attribute_fields=None):
     for feature in source.getFeatures():
         # Extract geometries
         qgs_geometry = feature.geometry()
-        wkt = qgs_geometry.asWkt()
-        shapely_geometry = shp.from_wkt(wkt)
-        geometries.append(shapely_geometry)
+        wkb = bytes(qgs_geometry.asWkb())
+        wkbs.append(wkb)
 
         # Extract attributes if needed
         if attribute_fields:
@@ -48,6 +47,8 @@ def qgs_to_gpd(source, attribute_fields=None):
                 else:
                     # Field not found, add None
                     attributes_data[field_name].append(None)
+
+    geometries = shp.from_wkb(wkbs)
 
     # Create appropriate return type
     if attribute_fields:
