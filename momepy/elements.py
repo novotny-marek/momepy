@@ -1,7 +1,7 @@
 import momepy
 
 from .utils import qgs_to_gpd
-from PyQt5.QtCore import QVariant
+from PyQt5.QtCore import QMetaType
 from qgis.core import (
     Qgis,
     QgsField,
@@ -57,7 +57,7 @@ class BufferedLimit(QgsProcessingAlgorithm):
 
         # Create output fields
         fields = QgsFields()
-        fields.append(QgsField("id", QVariant.Int))
+        fields.append(QgsField("id", QMetaType.Type.Int))
 
         # Create output sink
         (sink, dest_id) = self.parameterAsSink(

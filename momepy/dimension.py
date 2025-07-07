@@ -1,7 +1,7 @@
 import momepy
 
 from .utils import qgs_to_gpd
-from PyQt5.QtCore import QVariant
+from PyQt5.QtCore import QMetaType
 from qgis.core import (
     Qgis,
     QgsField,
@@ -65,7 +65,7 @@ class CourtyardArea(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new courtyard area field)
         fields = source.fields()
-        fields.append(QgsField("courtyard_area", QVariant.Double))
+        fields.append(QgsField("courtyard_area", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -149,7 +149,7 @@ class LongestAxisLength(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new longest axis length field)
         fields = source.fields()
-        fields.append(QgsField("lal", QVariant.Double))
+        fields.append(QgsField("lal", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -295,7 +295,7 @@ class StreetProfile(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new street profile field)
         fields = polygon_source.fields()
-        fields.append(QgsField("courtyard_area", QVariant.Double))
+        fields.append(QgsField("courtyard_area", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(

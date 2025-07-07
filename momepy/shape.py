@@ -1,7 +1,7 @@
 import momepy
 
 from .utils import qgs_to_gpd
-from PyQt5.QtCore import QVariant
+from PyQt5.QtCore import QMetaType
 from qgis.core import (
     Qgis,
     QgsField,
@@ -70,7 +70,7 @@ class FormFactor(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new form factor field)
         fields = source.fields()
-        fields.append(QgsField("form_factor", QVariant.Double))
+        fields.append(QgsField("form_factor", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -154,7 +154,7 @@ class FractalDimension(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new ratio field)
         fields = source.fields()
-        fields.append(QgsField("fractal_dimension", QVariant.Double))
+        fields.append(QgsField("fractal_dimension", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -238,7 +238,7 @@ class FacadeRatio(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new ratio field)
         fields = source.fields()
-        fields.append(QgsField("facade_ratio", QVariant.Double))
+        fields.append(QgsField("facade_ratio", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -322,7 +322,7 @@ class CircularCompactness(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new circular compactness field)
         fields = source.fields()
-        fields.append(QgsField("circular_compactness", QVariant.Double))
+        fields.append(QgsField("circular_compactness", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -406,7 +406,7 @@ class SquareCompactness(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new ratio field)
         fields = source.fields()
-        fields.append(QgsField("square_compactness", QVariant.Double))
+        fields.append(QgsField("square_compactness", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -487,7 +487,7 @@ class Convexity(QgsProcessingAlgorithm):
         convexity_values = convexity_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("convexity", QVariant.Double))
+        fields.append(QgsField("convexity", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -587,7 +587,7 @@ class CourtyardIndex(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new courtyard index field)
         fields = source.fields()
-        fields.append(QgsField("courtyard_index", QVariant.Double))
+        fields.append(QgsField("courtyard_index", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -670,7 +670,7 @@ class Rectangularity(QgsProcessingAlgorithm):
         rectangularity_values = rectangularity_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("rectangularity", QVariant.Double))
+        fields.append(QgsField("rectangularity", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -768,7 +768,7 @@ class ShapeIndex(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new shape index field)
         fields = source.fields()
-        fields.append(QgsField("shape_index", QVariant.Double))
+        fields.append(QgsField("shape_index", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -876,7 +876,7 @@ class Corners(QgsProcessingAlgorithm):
         corners_values = corners_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("corners", QVariant.Int))
+        fields.append(QgsField("corners", QMetaType.Type.Int))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -984,7 +984,7 @@ class Squareness(QgsProcessingAlgorithm):
         squareness_values = squareness_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("squareness", QVariant.Double))
+        fields.append(QgsField("squareness", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -1069,7 +1069,7 @@ class EquivalentRectangularIndex(QgsProcessingAlgorithm):
         eri_values = eri_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("equivalent_rectangular_index", QVariant.Double))
+        fields.append(QgsField("equivalent_rectangular_index", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -1150,7 +1150,7 @@ class Elongation(QgsProcessingAlgorithm):
         elongation_values = elongation_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("elongation", QVariant.Double))
+        fields.append(QgsField("elongation", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -1262,7 +1262,7 @@ class CentroidCornerDistance(QgsProcessingAlgorithm):
         ccd_values = ccd_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("centroid_corner_distance", QVariant.Double))
+        fields.append(QgsField("centroid_corner_distance", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -1343,7 +1343,7 @@ class Linearity(QgsProcessingAlgorithm):
         linearity_values = linearity_series.to_list()
 
         fields = source.fields()
-        fields.append(QgsField("linearity", QVariant.Double))
+        fields.append(QgsField("linearity", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -1429,7 +1429,7 @@ class CompactnessWeightedAxis(QgsProcessingAlgorithm):
 
         # Create output fields (original fields + new cwa field)
         fields = source.fields()
-        fields.append(QgsField("compactness_weighted_axis", QVariant.Double))
+        fields.append(QgsField("compactness_weighted_axis", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
