@@ -3,9 +3,9 @@ import momepy
 from .utils import qgs_to_gpd
 from PyQt5.QtCore import QVariant
 from qgis.core import (
+    Qgis,
     QgsField,
     QgsFeature,
-    QgsProcessing,
     QgsFeatureSink,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSource,
@@ -47,7 +47,7 @@ class CourtyardArea(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -131,7 +131,7 @@ class LongestAxisLength(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -223,7 +223,7 @@ class StreetProfile(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input buildings layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -231,7 +231,7 @@ class StreetProfile(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT_STREETS,
                 "Input street layer",
-                [QgsProcessing.SourceType.VectorLine],
+                [Qgis.ProcessingSourceType.VectorLine],
             )
         )
 

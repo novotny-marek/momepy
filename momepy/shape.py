@@ -3,9 +3,9 @@ import momepy
 from .utils import qgs_to_gpd
 from PyQt5.QtCore import QVariant
 from qgis.core import (
+    Qgis,
     QgsField,
     QgsFeature,
-    QgsProcessing,
     QgsFeatureSink,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSource,
@@ -41,7 +41,7 @@ class FormFactor(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -134,7 +134,7 @@ class FractalDimension(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -218,7 +218,7 @@ class FacadeRatio(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -302,7 +302,7 @@ class CircularCompactness(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -386,7 +386,7 @@ class SquareCompactness(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -470,7 +470,7 @@ class Convexity(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input Layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -552,7 +552,7 @@ class CourtyardIndex(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -651,7 +651,7 @@ class Rectangularity(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input Layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -735,7 +735,7 @@ class ShapeIndex(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -834,7 +834,7 @@ class Corners(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input Layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -942,7 +942,7 @@ class Squareness(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input Layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -1048,7 +1048,7 @@ class EquivalentRectangularIndex(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input Layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -1133,7 +1133,7 @@ class Elongation(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input Layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -1218,7 +1218,7 @@ class CentroidCornerDistance(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input Layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -1326,7 +1326,7 @@ class Linearity(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input Layer",
-                [QgsProcessing.SourceType.VectorLine],
+                [Qgis.ProcessingSourceType.VectorLine],
             )
         )
 
@@ -1409,7 +1409,7 @@ class CompactnessWeightedAxis(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 

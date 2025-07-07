@@ -3,10 +3,10 @@ import momepy
 from .utils import qgs_to_gpd
 from PyQt5.QtCore import QVariant
 from qgis.core import (
+    Qgis,
     QgsField,
     QgsFeature,
     QgsGeometry,
-    QgsProcessing,
     QgsFeatureSink,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSource,
@@ -40,7 +40,7 @@ class BufferedLimit(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -115,7 +115,7 @@ class MorphologicalTessellation(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
                 "Input layer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -123,7 +123,7 @@ class MorphologicalTessellation(QgsProcessingAlgorithm):
             QgsProcessingParameterFeatureSource(
                 self.LIMIT,
                 "Limit buffer",
-                [QgsProcessing.SourceType.VectorPolygon],
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
