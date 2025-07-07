@@ -53,9 +53,7 @@ def qgs_to_gpd(source, attribute_fields=None):
     # Create appropriate return type
     if attribute_fields:
         # Create GeoDataFrame with attributes
-        gdf_data = attributes_data.copy()
-        gdf_data["geometry"] = geometries
-        return gpd.GeoDataFrame(gdf_data)
+        return gpd.GeoDataFrame(attributes_data, geometry=geometries)
     else:
         # Return just GeoSeries
         return gpd.GeoSeries(geometries)
