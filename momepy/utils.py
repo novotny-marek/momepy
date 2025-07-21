@@ -21,6 +21,7 @@ def qgs_to_gpd(source, attribute_fields=None):
     """
     wkbs = []
     attributes_data = {}
+    crs = source.sourceCrs().geographicCrsAuthId()
 
     # Initialize attribute dictionary if needed
     if attribute_fields:
@@ -53,7 +54,7 @@ def qgs_to_gpd(source, attribute_fields=None):
     # Create appropriate return type
     if attribute_fields:
         # Create GeoDataFrame with attributes
-        return gpd.GeoDataFrame(attributes_data, geometry=geometries)
+        return gpd.GeoDataFrame(attributes_data, geometry=geometries, crs=crs)
     else:
         # Return just GeoSeries
-        return gpd.GeoSeries(geometries)
+        return gpd.GeoSeries(geometries, crs=crs)
