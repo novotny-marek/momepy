@@ -196,8 +196,8 @@ class PerimeterWall(QgsProcessingAlgorithm):
 
 
 class StreetProfile(QgsProcessingAlgorithm):
-    INPUT = "INPUT_BUILDINGS"
-    INPUT_STREETS = "INPUT_STREETS"
+    INPUT = "INPUT_STREETS"
+    INPUT_BUILDINGS = "INPUT_BUILDINGS"
     OUTPUT = "OUTPUT"
     DISTANCE_FIELD = "DISTANCE_FIELD"
     TICK_LENGTH_FIELD = "TICK_LENGTH_FIELD"
@@ -222,16 +222,16 @@ class StreetProfile(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                "Input buildings layer",
-                [Qgis.ProcessingSourceType.VectorPolygon],
+                "Input street network layer",
+                [Qgis.ProcessingSourceType.VectorLine],
             )
         )
 
         self.addParameter(
             QgsProcessingParameterFeatureSource(
-                self.INPUT_STREETS,
-                "Input streets layer",
-                [Qgis.ProcessingSourceType.VectorLine],
+                self.INPUT_BUILDINGS,
+                "Input buildings layer",
+                [Qgis.ProcessingSourceType.VectorPolygon],
             )
         )
 
@@ -259,7 +259,7 @@ class StreetProfile(QgsProcessingAlgorithm):
             QgsProcessingParameterField(
                 self.HEIGHT_FIELD,
                 "Height field",
-                parentLayerParameterName=self.INPUT,
+                parentLayerParameterName=self.INPUT_BUILDINGS,
                 type=QgsProcessingParameterField.Numeric,
                 defaultValue=None,
                 optional=True,
@@ -271,31 +271,49 @@ class StreetProfile(QgsProcessingAlgorithm):
         )
 
     def processAlgorithm(self, parameters, context, feedback):
-        polygon_source = self.parameterAsSource(parameters, self.INPUT, context)
-        line_source = self.parameterAsSource(parameters, self.INPUT_STREETS, context)
+        line_source = self.parameterAsSource(parameters, self.INPUT, context)
+        polygon_source = self.parameterAsSource(parameters, self.INPUT_BUILDINGS, context)
         distance_field = self.parameterAsDouble(
             parameters, self.DISTANCE_FIELD, context
         )
         tick_length_field = self.parameterAsDouble(
             parameters, self.TICK_LENGTH_FIELD, context
         )
-        height_field = self.parameterAsString(parameters, self.HEIGHT_FIELD, context)
+        height_field = self.parameterAsString(parameters, self.HEIGHT_FIELD, context) or None
 
         # Convert QGIS source to GeoSeries and calculate street profile characters
-        polygon_geometry_series = qgs_to_gpd(polygon_source)
+        polygon_geometry_dataframe = qgs_to_gpd(polygon_source, attribute_fields=height_field)
         line_geometry_series = qgs_to_gpd(line_source)
+        if height_field:
+            height = polygon_geometry_dataframe[height_field]
+        else:
+            height = None
         street_profile_series = momepy.street_profile(
             line_geometry_series,
-            polygon_geometry_series,
+            polygon_geometry_dataframe,
             distance_field,
             tick_length_field,
-            height_field,
+            height,
         )
-        street_profile_values = street_profile_series.to_list()
+        street_profile_values = street_profile_series.to_dict()
+        width_values = street_profile_values["width"]
+        openness_values = street_profile_values["openness"]
+        width_deviation_values = street_profile_values["width_deviation"]
+        if height_field:
+            height_values = street_profile_values["height"]
+            height_deviation_values = street_profile_values["height_deviation"]
+            hw_ratio_values = street_profile_values["hw_ratio"]
 
-        # Create output fields (original fields + new street profile field)
-        fields = polygon_source.fields()
-        fields.append(QgsField("courtyard_area", QMetaType.Type.Double))
+        # Create output fields (original fields + new street profile fields)
+        fields = line_source.fields()
+        fields.append(QgsField("width", QMetaType.Type.Double))
+        fields.append(QgsField("openness", QMetaType.Type.Double))
+        fields.append(QgsField("width_deviation", QMetaType.Type.Double))
+
+        if height_field:
+            fields.append(QgsField("height", QMetaType.Type.Double))
+            fields.append(QgsField("height_deviation", QMetaType.Type.Double))
+            fields.append(QgsField("hw_ratio", QMetaType.Type.Double))
 
         # Create sink
         (sink, dest_id) = self.parameterAsSink(
@@ -303,15 +321,15 @@ class StreetProfile(QgsProcessingAlgorithm):
             self.OUTPUT,
             context,
             fields,
-            polygon_source.wkbType(),
-            polygon_source.sourceCrs(),
+            line_source.wkbType(),
+            line_source.sourceCrs(),
         )
 
         # Get features from source
-        features = polygon_source.getFeatures()
+        features = line_source.getFeatures()
         total = (
-            100.0 / polygon_source.featureCount()
-            if polygon_source.featureCount()
+            100.0 / line_source.featureCount()
+            if line_source.featureCount()
             else 0
         )
 
@@ -326,7 +344,15 @@ class StreetProfile(QgsProcessingAlgorithm):
 
             # Copy attributes and add new street profile
             attributes = feature.attributes()
-            attributes.append(street_profile_values[current])
+            
+            attributes.append(width_values[current])
+            attributes.append(openness_values[current])
+            attributes.append(width_deviation_values[current])
+            if height_field:
+                attributes.append(height_values[current])
+                attributes.append(height_deviation_values[current])
+                attributes.append(hw_ratio_values[current])
+
             output_feature.setAttributes(attributes)
 
             # Add feature to sink

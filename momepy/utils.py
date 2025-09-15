@@ -10,7 +10,7 @@ def qgs_to_gpd(source, attribute_fields=None):
     -----------
     source : QgsProcessingParameterFeatureSource
         QGIS feature source
-    attribute_fields : list or None
+    attribute_fields : str, list, or None
         List of field names to extract as attributes
         If None, returns only GeoSeries
         If list, returns GeoDataFrame with specified fields
@@ -24,6 +24,9 @@ def qgs_to_gpd(source, attribute_fields=None):
     crs = source.sourceCrs().geographicCrsAuthId()
 
     # Initialize attribute dictionary if needed
+    if isinstance(attribute_fields, str):
+        attribute_fields = [attribute_fields]
+
     if attribute_fields:
         for field_name in attribute_fields:
             attributes_data[field_name] = []
