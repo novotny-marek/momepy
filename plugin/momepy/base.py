@@ -31,7 +31,7 @@ class MomepyProcessingAlgorithm(QgsProcessingAlgorithm):
         """Return additional parameters specific for this algorithm. Override this if algorithm needs extra parameters."""
         return []
 
-    def initAlgorithm(self, configuratio=None):
+    def initAlgorithm(self, configuration=None):
         """Initialize algorithm with input/output plus additional parameters."""
         self.addParameter(
             QgsProcessingParameterFeatureSource(
