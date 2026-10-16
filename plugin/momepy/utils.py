@@ -21,7 +21,7 @@ def qgs_to_gpd(source, attribute_fields=None):
     """
     wkbs = []
     attributes_data = {}
-    crs = source.sourceCrs().geographicCrsAuthId()
+    crs = source.sourceCrs().authid()
 
     # Initialize attribute dictionary if needed
     if isinstance(attribute_fields, str):
