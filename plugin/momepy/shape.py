@@ -1,7 +1,7 @@
 import momepy
 
 from .utils import qgs_to_gpd
-from PyQt5.QtCore import QMetaType
+from PyQt6.QtCore import QMetaType
 from qgis.core import (
     Qgis,
     QgsField,
