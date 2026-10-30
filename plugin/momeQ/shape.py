@@ -456,7 +456,7 @@ class CompactnessWeightedAxis(MomeQProcessingAlgorithm):
     def calculate_values(self, source, parameters, context):
         return momepy.compactness_weighted_axis(qgs_to_gpd(source)).to_list()
 
-
+# TODO
 class SunlightOptimised(MomeQProcessingAlgorithm):
     FR_RATIO = "FR_RATIO"
     ELONGATION_RATIO = "ELONGATION_RATIO"

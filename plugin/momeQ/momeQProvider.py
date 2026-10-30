@@ -15,6 +15,9 @@ from .shape import (
     Linearity,
     Elongation,
     EquivalentRectangularIndex,
+    CentroidCornerDistance,
+    CompactnessWeightedAxis,
+    # SunlightOptimised,
 )
 from .dimension import (
     CourtyardArea,
@@ -24,6 +27,13 @@ from .dimension import (
 from .elements import (
     BufferedLimit,
     MorphologicalTessellation,
+    EnclosedTessellation,
+    Enclosures,
+    ProximityBands,
+    GenerateBlocks,
+    GetNearestStreet,
+    GetNearestNode,
+    GetNetworkRatio,
 )
 
 
@@ -56,8 +66,18 @@ class MomeQProvider(QgsProcessingProvider):
             Linearity(),
             Elongation(),
             EquivalentRectangularIndex(),
+            CentroidCornerDistance(),
+            CompactnessWeightedAxis(),
+            # SunlightOptimised(),
             BufferedLimit(),
             MorphologicalTessellation(),
+            EnclosedTessellation(),
+            Enclosures(),
+            ProximityBands(),
+            GenerateBlocks(),
+            GetNearestStreet(),
+            GetNearestNode(),
+            GetNetworkRatio(),
         ]
         return algorithms
 
