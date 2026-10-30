@@ -1,7 +1,7 @@
 import momepy
 
 from typing import List, Union
-from .base import MomepyProcessingAlgorithm
+from .base import MomeQProcessingAlgorithm
 from .utils import qgs_to_gpd
 from PyQt6.QtCore import QMetaType
 from qgis.core import (
@@ -25,7 +25,7 @@ class FloorArea(QgsProcessingAlgorithm):
     pass
 
 
-class CourtyardArea(MomepyProcessingAlgorithm):
+class CourtyardArea(MomeQProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
 
@@ -50,9 +50,10 @@ class CourtyardArea(MomepyProcessingAlgorithm):
     def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
         geometry_series = qgs_to_gpd(source)
         return momepy.courtyard_area(geometry_series).to_list()
+        return momepy.courtyard_area(geometry_series).to_list()
 
 
-class LongestAxisLength(MomepyProcessingAlgorithm):
+class LongestAxisLength(MomeQProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
 
@@ -76,6 +77,7 @@ class LongestAxisLength(MomepyProcessingAlgorithm):
 
     def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
         geometry_series = qgs_to_gpd(source)
+        return momepy.longest_axis_length(geometry_series).to_list()
         return momepy.longest_axis_length(geometry_series).to_list()
 
 

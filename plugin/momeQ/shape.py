@@ -2,7 +2,7 @@ import momepy
 
 from typing import List, Union
 from .utils import qgs_to_gpd
-from .base import MomepyProcessingAlgorithm
+from .base import MomeQProcessingAlgorithm
 from PyQt6.QtCore import QMetaType
 from qgis.core import (
     Qgis,
@@ -18,7 +18,7 @@ from qgis.core import (
 )
 
 
-class FormFactor(MomepyProcessingAlgorithm):
+class FormFactor(MomeQProcessingAlgorithm):
     HEIGHT_FIELD = "HEIGHT_FIELD"
 
     def name(self) -> str:
@@ -55,7 +55,7 @@ class FormFactor(MomepyProcessingAlgorithm):
 
         return momepy.form_factor(gdf, gdf[h].to_list())
 
-class FractalDimension(MomepyProcessingAlgorithm):
+class FractalDimension(MomeQProcessingAlgorithm):
     def name(self) -> str:
         return "fractal_dimension"
 
@@ -78,7 +78,7 @@ class FractalDimension(MomepyProcessingAlgorithm):
         return momepy.fractal_dimension(qgs_to_gpd(source)).to_list()
 
 
-class FacadeRatio(MomepyProcessingAlgorithm):
+class FacadeRatio(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "facade_ratio"
@@ -102,7 +102,7 @@ class FacadeRatio(MomepyProcessingAlgorithm):
         return momepy.facade_ratio(qgs_to_gpd(source)).to_list()
 
 
-class CircularCompactness(MomepyProcessingAlgorithm):
+class CircularCompactness(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "circular_compactness"
@@ -126,7 +126,7 @@ class CircularCompactness(MomepyProcessingAlgorithm):
         return momepy.circular_compactness(qgs_to_gpd(source)).to_list()
 
 
-class SquareCompactness(MomepyProcessingAlgorithm):
+class SquareCompactness(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "square_compactness"
@@ -150,7 +150,7 @@ class SquareCompactness(MomepyProcessingAlgorithm):
         return momepy.square_compactness(qgs_to_gpd(source)).to_list()
 
 
-class Convexity(MomepyProcessingAlgorithm):
+class Convexity(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "convexity"
@@ -174,7 +174,7 @@ class Convexity(MomepyProcessingAlgorithm):
         return momepy.convexity(qgs_to_gpd(source)).to_list()
 
 
-class CourtyardIndex(MomepyProcessingAlgorithm):
+class CourtyardIndex(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "courtyard_index"
@@ -198,7 +198,7 @@ class CourtyardIndex(MomepyProcessingAlgorithm):
         return momepy.courtyard_index(qgs_to_gpd(source)).to_list()
 
 
-class Rectangularity(MomepyProcessingAlgorithm):
+class Rectangularity(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "rectangularity"
@@ -222,7 +222,7 @@ class Rectangularity(MomepyProcessingAlgorithm):
         return momepy.rectangularity(qgs_to_gpd(source)).to_list()
 
 
-class ShapeIndex(MomepyProcessingAlgorithm):
+class ShapeIndex(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "shape_index"
@@ -246,7 +246,7 @@ class ShapeIndex(MomepyProcessingAlgorithm):
         return momepy.shape_index(qgs_to_gpd(source)).to_list()
 
 
-class Corners(MomepyProcessingAlgorithm):
+class Corners(MomeQProcessingAlgorithm):
     EPS = "EPS"
     INCLUDE_INTERIORS = "INCLUDE_INTERIORS"
 
@@ -282,7 +282,7 @@ class Corners(MomepyProcessingAlgorithm):
         ).to_list()
 
 
-class Squareness(MomepyProcessingAlgorithm):
+class Squareness(MomeQProcessingAlgorithm):
     EPS = "EPS"
     INCLUDE_INTERIORS = "INCLUDE_INTERIORS"
 
@@ -318,7 +318,7 @@ class Squareness(MomepyProcessingAlgorithm):
         ).to_list()
 
 
-class EquivalentRectangularIndex(MomepyProcessingAlgorithm):
+class EquivalentRectangularIndex(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "equivalent_rectangular_index"
@@ -342,7 +342,7 @@ class EquivalentRectangularIndex(MomepyProcessingAlgorithm):
         return momepy.equivalent_rectangular_index(qgs_to_gpd(source)).to_list()
 
 
-class Elongation(MomepyProcessingAlgorithm):
+class Elongation(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "elongation"
@@ -366,7 +366,7 @@ class Elongation(MomepyProcessingAlgorithm):
         return momepy.elongation(qgs_to_gpd(source)).to_list()
 
 
-class CentroidCornerDistance(MomepyProcessingAlgorithm):
+class CentroidCornerDistance(MomeQProcessingAlgorithm):
     EPS = "EPS"
     INCLUDE_INTERIORS = "INCLUDE_INTERIORS"
 
@@ -405,7 +405,7 @@ class CentroidCornerDistance(MomepyProcessingAlgorithm):
         return list(result[["mean", "std"]].itertuples(index=False, name=None))
 
 
-class Linearity(MomepyProcessingAlgorithm):
+class Linearity(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "linearity"
@@ -431,7 +431,7 @@ class Linearity(MomepyProcessingAlgorithm):
     def calculate_values(self, source, parameters, context):
         return momepy.linearity(qgs_to_gpd(source)).to_list()
 
-class CompactnessWeightedAxis(MomepyProcessingAlgorithm):
+class CompactnessWeightedAxis(MomeQProcessingAlgorithm):
 
     def name(self) -> str:
         return "compactness_weighted_axis"
@@ -457,7 +457,7 @@ class CompactnessWeightedAxis(MomepyProcessingAlgorithm):
         return momepy.compactness_weighted_axis(qgs_to_gpd(source)).to_list()
 
 
-class SunlightOptimised(MomepyProcessingAlgorithm):
+class SunlightOptimised(MomeQProcessingAlgorithm):
     FR_RATIO = "FR_RATIO"
     ELONGATION_RATIO = "ELONGATION_RATIO"
     MIN_COURTYARD_AREA = "MIN_COURTYARD_AREA"

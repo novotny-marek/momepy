@@ -27,8 +27,7 @@ from .elements import (
 )
 
 
-class MomepyProvider(QgsProcessingProvider):
-    """The"""
+class MomeQProvider(QgsProcessingProvider):
 
     def id(self) -> str:
         """The id of the plugin used for identifying the provider."""
