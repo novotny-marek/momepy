@@ -1,5 +1,7 @@
 import momepy
 
+from typing import List, Union
+from .base import MomepyProcessingAlgorithm
 from .utils import qgs_to_gpd
 from PyQt6.QtCore import QMetaType
 from qgis.core import (
@@ -23,7 +25,7 @@ class FloorArea(QgsProcessingAlgorithm):
     pass
 
 
-class CourtyardArea(QgsProcessingAlgorithm):
+class CourtyardArea(MomepyProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
 
@@ -42,72 +44,15 @@ class CourtyardArea(QgsProcessingAlgorithm):
     def shortHelpString(self) -> str:
         return "Calculates area of holes within geometry - area of courtyards."
 
-    def initAlgorithm(self, configuration=None):
-        self.addParameter(
-            QgsProcessingParameterFeatureSource(
-                self.INPUT,
-                "Input geometry layer",
-                [Qgis.ProcessingSourceType.VectorPolygon],
-            )
-        )
+    def get_output_fields(self) -> List[QgsField]:
+        return [QgsField("courtyard_area", QMetaType.Type.Double)]
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Courtyard area")
-        )
-
-    def processAlgorithm(self, parameters, context, feedback):
-        source = self.parameterAsSource(parameters, self.INPUT, context)
-
-        # Convert QGIS source to GeoSeries and calculate courtyard area
+    def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
         geometry_series = qgs_to_gpd(source)
-        courtyard_area_series = momepy.courtyard_area(geometry_series)
-        courtyard_area_values = courtyard_area_series.to_list()
-
-        # Create output fields (original fields + new courtyard area field)
-        fields = source.fields()
-        fields.append(QgsField("courtyard_area", QMetaType.Type.Double))
-
-        # Create sink
-        (sink, dest_id) = self.parameterAsSink(
-            parameters,
-            self.OUTPUT,
-            context,
-            fields,
-            source.wkbType(),
-            source.sourceCrs(),
-        )
-
-        # Get features from source
-        features = source.getFeatures()
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
-
-        # Process each feature directly
-        for current, feature in enumerate(features):
-            if feedback.isCanceled():
-                break
-
-            # Create output feature
-            output_feature = QgsFeature(fields)
-            output_feature.setGeometry(feature.geometry())
-
-            # Copy attributes and add new courtyard area
-            attributes = feature.attributes()
-            attributes.append(courtyard_area_values[current])
-            output_feature.setAttributes(attributes)
-
-            # Add feature to sink
-            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
-
-            # Update progress
-            feedback.setProgress(int(current * total))
-
-        return {self.OUTPUT: dest_id}
-
-    def createInstance(self):
-        return self.__class__()
+        return momepy.courtyard_area(geometry_series).to_list()
 
 
-class LongestAxisLength(QgsProcessingAlgorithm):
+class LongestAxisLength(MomepyProcessingAlgorithm):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
 
@@ -126,69 +71,12 @@ class LongestAxisLength(QgsProcessingAlgorithm):
     def shortHelpString(self) -> str:
         return "Calculates the length of the longest axis of object."
 
-    def initAlgorithm(self, configuration=None):
-        self.addParameter(
-            QgsProcessingParameterFeatureSource(
-                self.INPUT,
-                "Input geometry layer",
-                [Qgis.ProcessingSourceType.VectorPolygon],
-            )
-        )
+    def get_output_fields(self) -> List[QgsField]:
+        return [QgsField("longest_axis_length", QMetaType.Type.Double)]
 
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(self.OUTPUT, "Longest axis length")
-        )
-
-    def processAlgorithm(self, parameters, context, feedback):
-        source = self.parameterAsSource(parameters, self.INPUT, context)
-
-        # Convert QGIS source to GeoSeries and calculate longest axis length
+    def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
         geometry_series = qgs_to_gpd(source)
-        lal_series = momepy.longest_axis_length(geometry_series)
-        lal_values = lal_series.to_list()
-
-        # Create output fields (original fields + new longest axis length field)
-        fields = source.fields()
-        fields.append(QgsField("lal", QMetaType.Type.Double))
-
-        # Create sink
-        (sink, dest_id) = self.parameterAsSink(
-            parameters,
-            self.OUTPUT,
-            context,
-            fields,
-            source.wkbType(),
-            source.sourceCrs(),
-        )
-
-        # Get features from source
-        features = source.getFeatures()
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
-
-        # Process each feature directly
-        for current, feature in enumerate(features):
-            if feedback.isCanceled():
-                break
-
-            # Create output feature
-            output_feature = QgsFeature(fields)
-            output_feature.setGeometry(feature.geometry())
-
-            # Copy attributes and add new longest axis length
-            attributes = feature.attributes()
-            attributes.append(lal_values[current])
-            output_feature.setAttributes(attributes)
-
-            # Add feature to sink
-            sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
-
-            # Update progress
-            feedback.setProgress(int(current * total))
-
-        return {self.OUTPUT: dest_id}
-
-    def createInstance(self):
-        return self.__class__()
+        return momepy.longest_axis_length(geometry_series).to_list()
 
 
 class PerimeterWall(QgsProcessingAlgorithm):
