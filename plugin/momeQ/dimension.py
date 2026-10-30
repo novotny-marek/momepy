@@ -44,7 +44,7 @@ class CourtyardArea(MomeQProcessingAlgorithm):
     def shortHelpString(self) -> str:
         return "Calculates area of holes within geometry - area of courtyards."
 
-    def get_output_fields(self) -> List[QgsField]:
+    def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [QgsField("courtyard_area", QMetaType.Type.Double)]
 
     def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
@@ -72,7 +72,7 @@ class LongestAxisLength(MomeQProcessingAlgorithm):
     def shortHelpString(self) -> str:
         return "Calculates the length of the longest axis of object."
 
-    def get_output_fields(self) -> List[QgsField]:
+    def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [QgsField("longest_axis_length", QMetaType.Type.Double)]
 
     def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
