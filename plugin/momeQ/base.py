@@ -1,20 +1,24 @@
 import math
 
-from typing import List, Union, Sequence
+from typing import List, Union, Sequence, Tuple
 from qgis.core import (
     Qgis,
     QgsField,
     QgsFeature,
     QgsFeatureSink,
+    QgsFields,
+    QgsGeometry,
+    QgsProcessingException,
     QgsProcessingContext,
     QgsProcessingFeedback,
     QgsProcessingAlgorithm,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
 )
+from .utils import qgs_to_gpd
 
 
-class MomepyProcessingAlgorithm(QgsProcessingAlgorithm):
+class MomeQProcessingAlgorithm(QgsProcessingAlgorithm):
     """Base class for momepy processing algorithms."""
 
     INPUT = "INPUT"
@@ -130,9 +134,7 @@ class MomepyProcessingAlgorithm(QgsProcessingAlgorithm):
             if not isinstance(values, (list, tuple)):
                 values = [values]
 
-            attrs.extend(
-                None if isinstance(v, float) and math.isnan(v) else v for v in values
-            )
+            attrs.extend(_to_qgis_value(v) for v in values)
             output_feature.setAttributes(attrs)
 
             # Add feature to sink
@@ -144,17 +146,68 @@ class MomepyProcessingAlgorithm(QgsProcessingAlgorithm):
     def createInstance(self):
         return self.__class__()
 
-class MomepyGeometryAlgorithm(QgsProcessingAlgorithm):
+def _to_qgis_value(v):
+    """Normalise a Python/numpy scalar for QgsFeature.setAttributes()."""
+    if isinstance(v, float) and math.isnan(v):
+        return None
+    if hasattr(v, "item"):  # numpy scalar -> native Python type
+        return v.item()
+    return v
+
+
+def shapely_to_qgs_geometry(geom) -> QgsGeometry:
+    """Convert a shapely geometry to a QgsGeometry.
+
+    QgsGeometry.fromWkb() is an *instance* method in PyQGIS (unlike the
+    static fromWkt()), so it cannot be called on the class. QGIS 4 provides
+    the direct static converter QgsGeometry.from_shapely(); fall back to the
+    instance-based fromWkb() pattern on older bindings.
+    """
+    if hasattr(QgsGeometry, "from_shapely"):
+        return QgsGeometry.from_shapely(geom)
+    qgs_geom = QgsGeometry()
+    qgs_geom.fromWkb(bytes(geom.wkb))
+    return qgs_geom
+
+
+class MomeQGeometryAlgorithm(QgsProcessingAlgorithm):
     """Baseclass for momepy algorithms producing new geometry layer"""
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
+
+    def input_geometry_types(self):
+        return [Qgis.ProcessingSourceType.VectorPolygon]
+
+    def input_layer_name(self):
+        return "Input geometry layer"
+
+    def get_additional_parameters(self):
+        return []
+
+    def initAlgorithm(self, configuration=None):
+        self.addParameter(
+            QgsProcessingParameterFeatureSource(
+                self.INPUT,
+                self.input_layer_name(),
+                self.input_geometry_types(),
+            )
+        )
+        for param in self.get_additional_parameters():
+            self.addParameter(param)
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(self.OUTPUT, self.displayName())
+        )
 
     def run_momepy(self, gdf, parameters, context):
         raise NotImplementedError(
             f"{self.__class__.__name__} must implement run_momepy()"
         )
 
-    def output_fields(self) -> List:
+    def output_fields(self, parameters=None, context=None) -> List[QgsField]:
+        return []
+
+    def row_attributes(self, index, row) -> List:
+        """Attributes for one output row; only used when output_fields() is non-empty."""
         return []
 
     def output_wkb_type(self, source) -> int:
@@ -168,24 +221,57 @@ class MomepyGeometryAlgorithm(QgsProcessingAlgorithm):
 
         result = self.run_momepy(gdf, parameters, context)
 
-        fields = self.output_fields()
+        # parameterAsSink() requires a QgsFields instance, not a Python list.
+        fields = QgsFields()
+        for field in self.output_fields(parameters, context):
+            fields.append(field)
+
+        # Convert the result to QgsGeometry objects up-front so the sink can be
+        # created with the *actual* geometry type. QGIS memory sinks
+        # (TEMPORARY_OUTPUT) cannot be created with Qgis.WkbType.Unknown.
+        if hasattr(result, "iterrows") and hasattr(result, "columns"):
+            # GeoDataFrame-like result
+            geom_col = result.geometry.name
+            items = list(result.iterrows())
+            geometries = [
+                shapely_to_qgs_geometry(row[geom_col]) for _, row in items
+            ]
+        else:
+            # Plain iterable of shapely geometries.
+            geoms = result.geometry if hasattr(result, "geometry") else result
+            geoms = list(geoms)
+            items = [(i, None) for i in range(len(geoms))]
+            geometries = [shapely_to_qgs_geometry(g) for g in geoms]
+
+        wkb_type = self.output_wkb_type(source)
+        if wkb_type == Qgis.WkbType.Unknown:
+            wkb_type = (
+                geometries[0].wkbType()
+                if geometries
+                else Qgis.WkbType.NoGeometry
+            )
+
         (sink, dest_id) = self.parameterAsSink(
             parameters,
             self.OUTPUT,
             context,
             fields,
-            self.output_wkb_type(source),
+            wkb_type,
             source.sourceCrs(),
         )
 
-        geoms = result.geometry if hasattr(result, "geometry") else result
+        has_attrs = fields.count() > 0
 
-        total = 100.0 / len(geoms) if len(geoms) else 0
-        for current, geom in enumerate(geoms):
+        total = 100.0 / len(geometries) if geometries else 0
+        for current, ((index, row), geometry) in enumerate(zip(items, geometries)):
             if feedback.isCanceled():
                 break
             output_feature = QgsFeature(fields)
-            output_feature.setGeometry(QgsGeometry.fromWkb(bytes(geom.wkb)))
+            output_feature.setGeometry(geometry)
+            if has_attrs:
+                output_feature.setAttributes(
+                    [_to_qgis_value(v) for v in self.row_attributes(index, row)]
+                )
             sink.addFeature(output_feature, QgsFeatureSink.Flag.FastInsert)
             feedback.setProgress(int(current * total))
 
