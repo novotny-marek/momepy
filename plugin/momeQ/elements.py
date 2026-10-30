@@ -378,6 +378,7 @@ class GenerateBlocks(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT_IDS, "Block ID per tessellation cell"))
 
     def processAlgorithm(self, parameters, context, feedback):
+        tess_source = self.parameterAsSource(parameters, self.INPUT_TESSELLATION, context)
         tess = qgs_to_gpd(self.parameterAsSource(parameters, self.INPUT_TESSELLATION, context))
         edges = qgs_to_gpd(self.parameterAsSource(parameters, self.INPUT_EDGES, context))
         buildings = qgs_to_gpd(self.parameterAsSource(parameters, self.INPUT_BUILDINGS, context))
@@ -415,7 +416,7 @@ class GenerateBlocks(QgsProcessingAlgorithm):
         id_fields.append(QgsField("block_id", QMetaType.Type.LongLong))
         (sink2, dest2) = self.parameterAsSink(
             parameters, self.OUTPUT_IDS, context, id_fields,
-            Qgis.WkbType.NoGeometry, tess.crs(),
+            Qgis.WkbType.NoGeometry, tess_source.sourceCrs(),
         )
         for idx, bid in tess_ids.items():
             f = QgsFeature(id_fields)
