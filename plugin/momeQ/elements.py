@@ -399,7 +399,7 @@ class GenerateBlocks(QgsProcessingAlgorithm):
         )
         (sink, dest) = self.parameterAsSink(
             parameters, self.OUTPUT_BLOCKS, context, block_fields,
-            block_wkb_type, tess.crs(),
+            block_wkb_type, tess_source.sourceCrs(),
         )
         total = 100.0 / len(block_geometries) if block_geometries else 0
         for i, geom in enumerate(block_geometries):

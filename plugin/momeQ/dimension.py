@@ -50,7 +50,6 @@ class CourtyardArea(MomeQProcessingAlgorithm):
     def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
         geometry_series = qgs_to_gpd(source)
         return momepy.courtyard_area(geometry_series).to_list()
-        return momepy.courtyard_area(geometry_series).to_list()
 
 
 class LongestAxisLength(MomeQProcessingAlgorithm):
@@ -77,7 +76,6 @@ class LongestAxisLength(MomeQProcessingAlgorithm):
 
     def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
         geometry_series = qgs_to_gpd(source)
-        return momepy.longest_axis_length(geometry_series).to_list()
         return momepy.longest_axis_length(geometry_series).to_list()
 
 

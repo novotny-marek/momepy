@@ -7,7 +7,7 @@ It is currently in a pre-alpha version.
 
 ## Requirements
 
-momepy plugin requires [momepy](https://docs.momepy.org) >= 0.10.0.
+momepy plugin requires [momepy](https://docs.momepy.org) >= 1.0.0.
 
 ### Setup
 
