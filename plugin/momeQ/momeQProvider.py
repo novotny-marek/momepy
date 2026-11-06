@@ -27,6 +27,12 @@ from .dimension import (
     StreetProfile,
     Volume,
 )
+from .distribution import (
+    Orientation,
+    SharedWalls,
+    CellAlignment,
+    StreetAlignment,
+)
 from .elements import (
     BufferedLimit,
     MorphologicalTessellation,
@@ -68,6 +74,10 @@ class MomeQProvider(QgsProcessingProvider):
             Volume(),
             FloorArea(),
             PerimeterWall(),
+            Orientation(),
+            SharedWalls(),
+            CellAlignment(),
+            StreetAlignment(),
             Squareness(),
             Linearity(),
             Elongation(),
