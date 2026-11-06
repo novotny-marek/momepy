@@ -1,5 +1,54 @@
 import geopandas as gpd
+import pandas as pd
 import shapely as shp
+
+
+def qgs_to_dataframe(source, attribute_fields=None):
+    """
+    Convert QGIS feature source to pandas DataFrame (no geometry).
+    
+    Use this for layers without geometry (e.g., edge list tables).
+    
+    Parameters:
+    -----------
+    source : QgsProcessingParameterFeatureSource
+        QGIS feature source
+    attribute_fields : str, list, or None
+        List of field names to extract. If None, extracts all fields.
+    
+    Returns:
+    --------
+    pd.DataFrame
+    """
+    attributes_data = {}
+    
+    # Get all field names
+    field_names = [field.name() for field in source.fields()]
+    
+    # If no specific fields requested, use all fields
+    if attribute_fields is None:
+        attribute_fields = field_names
+    elif isinstance(attribute_fields, str):
+        attribute_fields = [attribute_fields]
+    
+    # Initialize attribute dictionary
+    for field_name in attribute_fields:
+        attributes_data[field_name] = []
+    
+    # Extract attributes from features
+    for feature in source.getFeatures():
+        feature_attributes = feature.attributes()
+        
+        for field_name in attribute_fields:
+            if field_name in field_names:
+                field_index = field_names.index(field_name)
+                value = feature_attributes[field_index]
+                attributes_data[field_name].append(value)
+            else:
+                # Field not found, add None
+                attributes_data[field_name].append(None)
+    
+    return pd.DataFrame(attributes_data)
 
 
 def qgs_to_gpd(source, attribute_fields=None):
