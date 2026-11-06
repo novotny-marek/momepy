@@ -44,6 +44,15 @@ from .elements import (
     GetNearestNode,
     GetNetworkRatio,
 )
+from .graph_construction import (
+    BuildContiguity,
+    BuildHigherOrder,
+    BuildDistanceBand,
+    BuildFuzzyContiguity,
+    BuildKNN,
+    BuildKernel,
+    BuildTriangulation,
+)
 
 
 class MomeQProvider(QgsProcessingProvider):
@@ -94,6 +103,14 @@ class MomeQProvider(QgsProcessingProvider):
             GetNearestStreet(),
             GetNearestNode(),
             GetNetworkRatio(),
+            # Graph algorithms
+            BuildContiguity(),
+            BuildHigherOrder(),
+            BuildDistanceBand(),
+            BuildFuzzyContiguity(),
+            BuildKNN(),
+            BuildKernel(),
+            BuildTriangulation(),
         ]
         return algorithms
 
