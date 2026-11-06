@@ -7,9 +7,7 @@ from PyQt6.QtCore import QMetaType
 from qgis.core import (
     Qgis,
     QgsField,
-    QgsFeature,
-    QgsFeatureSink,
-    QgsProcessingAlgorithm,
+    QgsProcessingParameterDefinition,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterField,
@@ -38,7 +36,7 @@ class FormFactor(MomeQProcessingAlgorithm):
             "Calculates the form factor of each object given its geometry and height."
         )
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [QgsProcessingParameterField(
             self.HEIGHT_FIELD,
             "Height field",
@@ -46,7 +44,7 @@ class FormFactor(MomeQProcessingAlgorithm):
             type=QgsProcessingParameterField.Numeric,
         )]
 
-    def get_output_fields(self, parameters=None, context=None):
+    def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [QgsField("form_factor", QMetaType.Type.Double)]
 
     def calculate_values(self, source, parameters, context):
@@ -71,10 +69,10 @@ class FractalDimension(MomeQProcessingAlgorithm):
     def shortHelpString(self) -> str:
         return "Calculates fractal dimension based on area and perimeter."
 
-    def get_output_fields(self, parameters=None, context=None):
+    def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [QgsField("fractal_dimension", QMetaType.Type.Double)]
 
-    def calculate_values(self, source, parameters, context):
+    def calculate_values(self, source, parameters, context) -> List[float]:
         return momepy.fractal_dimension(qgs_to_gpd(source)).to_list()
 
 
@@ -95,10 +93,10 @@ class FacadeRatio(MomeQProcessingAlgorithm):
     def shortHelpString(self) -> str:
         return "Calculates the facade ratio of each object given its geometry."
 
-    def get_output_fields(self, parameters=None, context=None):
+    def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [QgsField("facade_ratio", QMetaType.Type.Double)]
 
-    def calculate_values(self, source, parameters, context):
+    def calculate_values(self, source, parameters, context) -> List[float]:
         return momepy.facade_ratio(qgs_to_gpd(source)).to_list()
 
 
@@ -265,7 +263,7 @@ class Corners(MomeQProcessingAlgorithm):
     def shortHelpString(self) -> str:
         return "Calculates the number of corners of each object given its geometry."
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterNumber(self.EPS, "Angle threshold (degrees)", QgsProcessingParameterNumber.Double, defaultValue=10),
             QgsProcessingParameterBoolean(self.INCLUDE_INTERIORS, "Include interior rings", defaultValue=False),
@@ -301,7 +299,7 @@ class Squareness(MomeQProcessingAlgorithm):
     def shortHelpString(self) -> str:
         return "Calculates the squareness of each object given its geometry."
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterNumber(self.EPS, "Angle threshold (degrees)", QgsProcessingParameterNumber.Double, defaultValue=10),
             QgsProcessingParameterBoolean(self.INCLUDE_INTERIORS, "Include interior rings", defaultValue=False),
@@ -387,7 +385,7 @@ class CentroidCornerDistance(MomeQProcessingAlgorithm):
             "Calculates the centroid corner distance of each object given its geometry."
         )
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterNumber(self.EPS, "Angle threshold (degrees)", QgsProcessingParameterNumber.Double, defaultValue=10),
             QgsProcessingParameterBoolean(self.INCLUDE_INTERIORS, "Include interior rings", defaultValue=False),
@@ -456,28 +454,27 @@ class CompactnessWeightedAxis(MomeQProcessingAlgorithm):
     def calculate_values(self, source, parameters, context):
         return momepy.compactness_weighted_axis(qgs_to_gpd(source)).to_list()
 
-# TODO
 class SunlightOptimised(MomeQProcessingAlgorithm):
     FR_RATIO = "FR_RATIO"
     ELONGATION_RATIO = "ELONGATION_RATIO"
     MIN_COURTYARD_AREA = "MIN_COURTYARD_AREA"
 
-    def name(self):
+    def name(self) -> str:
         return "sunlight_optimised"
 
-    def displayName(self):
+    def displayName(self) -> str:
         return "Sunlight optimised"
 
-    def group(self):
+    def group(self) -> str:
         return "Shape"
 
-    def groupId(self):
+    def groupId(self) -> str:
         return "shape"
 
-    def shortHelpString(self):
+    def shortHelpString(self) -> str:
         return "Whether each building structure is optimised for sunlight (graph-based)."
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterNumber(self.FR_RATIO, "Max area-perimeter ratio", QgsProcessingParameterNumber.Double, defaultValue=8),
             QgsProcessingParameterNumber(self.ELONGATION_RATIO, "Max elongation ratio", QgsProcessingParameterNumber.Double, defaultValue=0.9),
@@ -489,9 +486,10 @@ class SunlightOptimised(MomeQProcessingAlgorithm):
 
     def calculate_values(self, source, parameters, context):
         gdf = qgs_to_gpd(source)
+        contiguity_graph = momepy.gdf_to_nx(gdf, multigraph=False)
         return momepy.sunlight_optimised(
             gdf,
-            self._contiguity_graph(gdf),
+            contiguity_graph,
             fr_ratio=self.parameterAsDouble(parameters, self.FR_RATIO, context),
             elongation_ratio=self.parameterAsDouble(parameters, self.ELONGATION_RATIO, context),
             min_courtyard_area=self.parameterAsDouble(parameters, self.MIN_COURTYARD_AREA, context),
