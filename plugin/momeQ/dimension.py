@@ -7,9 +7,7 @@ from PyQt6.QtCore import QMetaType
 from qgis.core import (
     Qgis,
     QgsField,
-    QgsFeature,
-    QgsFeatureSink,
-    QgsProcessingAlgorithm,
+    QgsProcessingParameterDefinition,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterField,
@@ -106,9 +104,6 @@ class FloorArea(MomeQProcessingAlgorithm):
 
 
 class CourtyardArea(MomeQProcessingAlgorithm):
-    INPUT = "INPUT"
-    OUTPUT = "OUTPUT"
-
     def name(self) -> str:
         return "courtyard_area"
 
@@ -127,15 +122,12 @@ class CourtyardArea(MomeQProcessingAlgorithm):
     def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [QgsField("courtyard_area", QMetaType.Type.Double)]
 
-    def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
+    def calculate_values(self, source, parameters, context) -> List[float]:
         geometry_series = qgs_to_gpd(source)
         return momepy.courtyard_area(geometry_series).to_list()
 
 
 class LongestAxisLength(MomeQProcessingAlgorithm):
-    INPUT = "INPUT"
-    OUTPUT = "OUTPUT"
-
     def name(self) -> str:
         return "longest_axis_length"
 
@@ -154,7 +146,7 @@ class LongestAxisLength(MomeQProcessingAlgorithm):
     def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [QgsField("longest_axis_length", QMetaType.Type.Double)]
 
-    def calculate_values(self, source, parameters, context) -> List[Union[float, int]]:
+    def calculate_values(self, source, parameters, context) -> List[float]:
         geometry_series = qgs_to_gpd(source)
         return momepy.longest_axis_length(geometry_series).to_list()
 
@@ -214,7 +206,7 @@ class StreetProfile(MomeQProcessingAlgorithm):
     def input_layer_name(self) -> str:
         return "Input street network layer"
 
-    def get_additional_parameters(self) -> List:
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterFeatureSource(
                 self.INPUT_BUILDINGS,
@@ -261,7 +253,7 @@ class StreetProfile(MomeQProcessingAlgorithm):
             )
         return fields
 
-    def calculate_values(self, source, parameters, context):
+    def calculate_values(self, source, parameters, context) -> List:
         building_source = self.parameterAsSource(
             parameters, self.INPUT_BUILDINGS, context
         )
