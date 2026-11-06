@@ -278,5 +278,5 @@ class StreetProfile(MomeQProcessingAlgorithm):
         return list(zip(*[result[c].to_list() for c in columns]))
 
 
-class WeightedCharacter(QgsProcessingAlgorithm):
+class WeightedCharacter(MomeQProcessingAlgorithm):
     pass
