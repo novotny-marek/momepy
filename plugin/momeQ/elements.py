@@ -2,6 +2,7 @@ import json
 
 import momepy
 
+from typing import List
 from .utils import qgs_to_gpd
 from .base import MomeQGeometryAlgorithm, MomeQProcessingAlgorithm, shapely_to_qgs_geometry
 from PyQt6.QtCore import QMetaType
@@ -13,6 +14,7 @@ from qgis.core import (
     QgsFeatureSink,
     QgsProcessingAlgorithm,
     QgsProcessingParameterBoolean,
+    QgsProcessingParameterDefinition,
     QgsProcessingParameterEnum,
     QgsProcessingParameterField,
     QgsProcessingParameterNumber,
@@ -45,9 +47,10 @@ class BufferedLimit(MomeQGeometryAlgorithm):
     def shortHelpString(self) -> str:
         return "Define a limit for tesselation as a buffer around buildings."
 
-    def input_layer_name(self): return "Buildings"
+    def input_layer_name(self) -> str:
+        return "Buildings"
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterBoolean(self.ADAPTIVE, "Adaptive (Gabriel graph)", defaultValue=False),
             QgsProcessingParameterNumber(self.BUFFER, "Buffer distance", QgsProcessingParameterNumber.Double, defaultValue=100),
@@ -91,9 +94,10 @@ class MorphologicalTessellation(MomeQGeometryAlgorithm):
     def shortHelpString(self) -> str:
         return "Generates morphological tessellation."
 
-    def input_layer_name(self): return "Buildings"
+    def input_layer_name(self) -> str:
+        return "Buildings"
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterEnum(self.CLIP, "Clip", self.CLIP_OPTIONS, defaultValue=0),
             QgsProcessingParameterFeatureSource(
@@ -106,10 +110,10 @@ class MorphologicalTessellation(MomeQGeometryAlgorithm):
             QgsProcessingParameterNumber(self.SEGMENT, "Max segment length", QgsProcessingParameterNumber.Double, defaultValue=0.5),
         ]
 
-    def output_wkb_type(self, source):
+    def output_wkb_type(self, source) -> int:
         return Qgis.WkbType.Unknown
 
-    def output_fields(self, parameters=None, context=None):
+    def output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [QgsField("building_idx", QMetaType.Type.LongLong)]
 
     def run_momepy(self, gdf, parameters, context):
@@ -130,7 +134,7 @@ class MorphologicalTessellation(MomeQGeometryAlgorithm):
         )
         return self._result
 
-    def row_attributes(self, index, row):
+    def row_attributes(self, index, row) -> List:
         return [index]
 
 class EnclosedTessellation(MomeQGeometryAlgorithm):
@@ -158,10 +162,10 @@ class EnclosedTessellation(MomeQGeometryAlgorithm):
     def shortHelpString(self): 
         return "Morphological tessellation within enclosures; with inner barriers it uses the CA implementation."
 
-    def input_layer_name(self):
+    def input_layer_name(self) -> str:
         return "Buildings"
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterFeatureSource(
                 self.ENCLOSURES,
@@ -212,10 +216,10 @@ class EnclosedTessellation(MomeQGeometryAlgorithm):
             ),
         ]
 
-    def output_wkb_type(self, source):
+    def output_wkb_type(self, source) -> int:
         return Qgis.WkbType.Unknown
 
-    def output_fields(self, parameters=None, context=None):
+    def output_fields(self, parameters=None, context=None) -> List[QgsField]:
         return [
             QgsField("building_idx", QMetaType.Type.LongLong),
             QgsField("enclosure_idx", QMetaType.Type.LongLong),
@@ -238,7 +242,7 @@ class EnclosedTessellation(MomeQGeometryAlgorithm):
 
         return self._result
 
-    def row_attributes(self, index, row):
+    def row_attributes(self, index, row) -> List:
         enc_col = next(c for c in self._result.columns if c != self._result.geometry.name)
 
         return [index, row[enc_col]]
@@ -263,23 +267,23 @@ class Enclosures(MomeQGeometryAlgorithm):
     def shortHelpString(self):
         return "Enclosed areas from primary barriers (roads, railways, rivers) and an optional limit."
 
-    def input_layer_name(self):
+    def input_layer_name(self) -> str:
         return "Primary barriers (lines)"
 
-    def input_geometry_types(self):
+    def input_geometry_types(self) -> List[Qgis.ProcessingSourceType]:
         return [Qgis.ProcessingSourceType.VectorLine]
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterFeatureSource(self.LIMIT, "External limit (optional)", [Qgis.ProcessingSourceType.VectorPolygon], optional=True),
             QgsProcessingParameterString(self.ENCLOSURE_ID, "Enclosure ID field name", defaultValue="eID"),
             QgsProcessingParameterBoolean(self.CLIP, "Clip enclosures to the limit", defaultValue=False),
         ]
 
-    def output_wkb_type(self, source):
+    def output_wkb_type(self, source) -> int:
         return Qgis.WkbType.Unknown
 
-    def output_fields(self, parameters=None, context=None):
+    def output_fields(self, parameters=None, context=None) -> List[QgsField]:
         eid = self.parameterAsString(parameters, self.ENCLOSURE_ID, context) if parameters else "eID"
         
         return [QgsField(eid, QMetaType.Type.LongLong)]
@@ -295,7 +299,7 @@ class Enclosures(MomeQGeometryAlgorithm):
         )
         return self._result
 
-    def row_attributes(self, index, row):
+    def row_attributes(self, index, row) -> List:
         return [row[self._eid]]
 
 class ProximityBands(MomeQGeometryAlgorithm):
@@ -319,13 +323,13 @@ class ProximityBands(MomeQGeometryAlgorithm):
     def shortHelpString(self):
         return "Bands within a fixed distance around street segments (single-sided requires neatnet)."
 
-    def input_layer_name(self):
+    def input_layer_name(self) -> str:
         return "Street segments (lines)"
 
-    def input_geometry_types(self):
+    def input_geometry_types(self) -> List[Qgis.ProcessingSourceType]:
         return [Qgis.ProcessingSourceType.VectorLine]
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterNumber(self.BAND, "Band distance", QgsProcessingParameterNumber.Double, defaultValue=20),
             QgsProcessingParameterNumber(self.SHRINK, "End shrink (fraction of length)", QgsProcessingParameterNumber.Double, defaultValue=0.001),
@@ -333,7 +337,7 @@ class ProximityBands(MomeQGeometryAlgorithm):
             QgsProcessingParameterBoolean(self.SINGLE_SIDED, "Split bands per side (requires neatnet)", defaultValue=False),
         ]
 
-    def output_wkb_type(self, source):
+    def output_wkb_type(self, source) -> int:
         return Qgis.WkbType.Unknown
 
     def run_momepy(self, gdf, parameters, context):
@@ -447,10 +451,10 @@ class GetNearestStreet(MomeQProcessingAlgorithm):
     def shortHelpString(self):
         return "Index of the nearest street for each building (feed into Street alignment / Get nearest node)."
 
-    def input_layer_name(self):
+    def input_layer_name(self) -> str:
         return "Buildings"
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterFeatureSource(self.INPUT_STREETS, "Streets", [Qgis.ProcessingSourceType.VectorLine]),
             # QGIS numbers cannot be null; -1 means "no limit".
@@ -487,10 +491,10 @@ class GetNearestNode(MomeQProcessingAlgorithm):
     def shortHelpString(self):
         return "Closest endpoint node on each building's nearest edge. Edges need node_start/node_end columns (momepy.nx_to_gdf structure)."
 
-    def input_layer_name(self):
+    def input_layer_name(self) -> str:
         return "Buildings"
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterFeatureSource(self.INPUT_NODES, "Network nodes", [Qgis.ProcessingSourceType.VectorPoint]),
             QgsProcessingParameterFeatureSource(self.INPUT_EDGES, "Network edges (with node_start/node_end)", [Qgis.ProcessingSourceType.VectorLine]),
@@ -526,10 +530,10 @@ class GetNetworkRatio(MomeQProcessingAlgorithm):
     def shortHelpString(self):
         return "Proportion of overlap between cells and network edges, as JSON key/value strings (edge IDs are integer positions)."
 
-    def input_layer_name(self):
+    def input_layer_name(self) -> str:
         return "Cells (e.g. enclosed tessellation)"
 
-    def get_additional_parameters(self):
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         return [
             QgsProcessingParameterFeatureSource(self.INPUT_EDGES, "Street network edges", [Qgis.ProcessingSourceType.VectorLine]),
             QgsProcessingParameterNumber(self.INITIAL_BUFFER, "Initial buffer for non-intersecting cells", QgsProcessingParameterNumber.Double, defaultValue=500),
