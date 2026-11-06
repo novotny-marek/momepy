@@ -17,12 +17,92 @@ from qgis.core import (
 )
 
 
-class Volume(QgsProcessingAlgorithm):
-    pass
+class Volume(MomeQProcessingAlgorithm):
+    HEIGHT_FIELD = "HEIGHT_FIELD"
+
+    def name(self) -> str:
+        return "volume"
+
+    def displayName(self) -> str:
+        return "Volume"
+
+    def group(self) -> str:
+        return "Dimension"
+
+    def groupId(self) -> str:
+        return "dimension"
+
+    def shortHelpString(self) -> str:
+        return "Calculates the volume of each object given its geometry and height."
+
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
+        return [
+            QgsProcessingParameterField(
+                self.HEIGHT_FIELD,
+                "Height field",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric,
+            )
+        ]
+
+    def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
+        return [QgsField("volume", QMetaType.Type.Double)]
+
+    def calculate_values(self, source, parameters, context) -> List[float]:
+        h = self.parameterAsString(parameters, self.HEIGHT_FIELD, context)
+        gdf = qgs_to_gpd(source, attribute_fields=[h])
+        area = gdf.area
+        height = gdf[h]
+        return momepy.volume(area, height).to_list()
 
 
-class FloorArea(QgsProcessingAlgorithm):
-    pass
+class FloorArea(MomeQProcessingAlgorithm):
+    HEIGHT_FIELD = "HEIGHT_FIELD"
+    FLOOR_FIELD = "FLOOR_FIELD"
+
+    def name(self) -> str:
+        return "floor_area"
+
+    def displayName(self) -> str:
+        return "Floor area"
+
+    def group(self) -> str:
+        return "Dimension"
+
+    def groupId(self) -> str:
+        return "dimension"
+
+    def shortHelpString(self) -> str:
+        return "Calculates the floor area of each object given its geometry, height and number of floors."
+
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
+        return [
+            QgsProcessingParameterField(
+                self.HEIGHT_FIELD,
+                "Height field",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric,
+            ),
+            QgsProcessingParameterField(
+                self.FLOOR_FIELD,
+                "Floor height field (optional)",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric,
+                optional=True,
+            ),
+        ]
+
+    def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
+        return [QgsField("floor_area", QMetaType.Type.Double)]
+
+    def calculate_values(self, source, parameters, context) -> List[float]:
+        h = self.parameterAsString(parameters, self.HEIGHT_FIELD, context)
+        f = self.parameterAsString(parameters, self.FLOOR_FIELD, context)
+        gdf = qgs_to_gpd(source, attribute_fields=[h, f] if f else [h])
+        area = gdf.area
+        height = gdf[h]
+        floor_height = gdf[f] if f else None
+        return momepy.floor_area(area, height, floor_height).to_list()
 
 
 class CourtyardArea(MomeQProcessingAlgorithm):
@@ -79,8 +159,28 @@ class LongestAxisLength(MomeQProcessingAlgorithm):
         return momepy.longest_axis_length(geometry_series).to_list()
 
 
-class PerimeterWall(QgsProcessingAlgorithm):
-    pass
+class PerimeterWall(MomeQProcessingAlgorithm):
+    def name(self) -> str:
+        return "perimeter_wall"
+
+    def displayName(self) -> str:
+        return "Perimeter wall"
+
+    def group(self) -> str:
+        return "Dimension"
+
+    def groupId(self) -> str:
+        return "dimension"
+
+    def shortHelpString(self) -> str:
+        return "Calculates the perimeter of the building wall."
+
+    def get_output_fields(self, parameters=None, context=None) -> List[QgsField]:
+        return [QgsField("perimeter_wall", QMetaType.Type.Double)]
+
+    def calculate_values(self, source, parameters, context) -> List[float]:
+        geometry_series = qgs_to_gpd(source)
+        return momepy.perimeter_wall(geometry_series).to_list()
 
 
 class StreetProfile(MomeQProcessingAlgorithm):
