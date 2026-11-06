@@ -1,17 +1,17 @@
 import math
 
-from typing import List, Union, Sequence, Tuple
+from typing import List, Sequence, Union
 from qgis.core import (
     Qgis,
     QgsField,
-    QgsFeature,
-    QgsFeatureSink,
     QgsFields,
+    QgsFeatureSink,
     QgsGeometry,
     QgsProcessingException,
     QgsProcessingContext,
     QgsProcessingFeedback,
     QgsProcessingAlgorithm,
+    QgsProcessingParameterDefinition,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterFeatureSource,
 )
@@ -45,7 +45,7 @@ class MomeQProcessingAlgorithm(QgsProcessingAlgorithm):
     def input_layer_name(self) -> str:
         return "Input geometry layer"
 
-    def get_additional_parameters(self) -> List:
+    def get_additional_parameters(self) -> List[QgsProcessingParameterDefinition]:
         """Return additional parameters specific for this algorithm. Override this if algorithm needs extra parameters."""
         return []
 
@@ -72,6 +72,13 @@ class MomeQProcessingAlgorithm(QgsProcessingAlgorithm):
     ):
         """Standard processing algorithm implementation."""
         source = self.parameterAsSource(parameters, self.INPUT, context)
+
+        # Input validation
+        if source is None:
+            raise QgsProcessingException("Input layer is required.")
+        
+        if source.featureCount() == 0:
+            raise QgsProcessingException("Input layer has no features.")
 
         # Create output fields
         fields = source.fields()
@@ -217,6 +224,14 @@ class MomeQGeometryAlgorithm(QgsProcessingAlgorithm):
         self, parameters, context: QgsProcessingContext, feedback: QgsProcessingFeedback
     ):
         source = self.parameterAsSource(parameters, self.INPUT, context)
+        
+        # Input validation
+        if source is None:
+            raise QgsProcessingException("Input layer is required.")
+        
+        if source.featureCount() == 0:
+            raise QgsProcessingException("Input layer has no features.")
+        
         gdf = qgs_to_gpd(source)
 
         result = self.run_momepy(gdf, parameters, context)
