@@ -21,8 +21,11 @@ from .shape import (
 )
 from .dimension import (
     CourtyardArea,
+    FloorArea,
     LongestAxisLength,
+    PerimeterWall,
     StreetProfile,
+    Volume,
 )
 from .elements import (
     BufferedLimit,
@@ -62,6 +65,9 @@ class MomeQProvider(QgsProcessingProvider):
             CourtyardArea(),
             LongestAxisLength(),
             StreetProfile(),
+            Volume(),
+            FloorArea(),
+            PerimeterWall(),
             Squareness(),
             Linearity(),
             Elongation(),
