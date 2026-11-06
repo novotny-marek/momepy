@@ -26,6 +26,7 @@ from .dimension import (
     PerimeterWall,
     StreetProfile,
     Volume,
+    WeightedCharacter,
 )
 from .distribution import (
     Orientation,
@@ -83,6 +84,7 @@ class MomeQProvider(QgsProcessingProvider):
             Volume(),
             FloorArea(),
             PerimeterWall(),
+            WeightedCharacter(),
             Orientation(),
             SharedWalls(),
             CellAlignment(),
