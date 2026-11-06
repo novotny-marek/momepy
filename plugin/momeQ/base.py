@@ -5,6 +5,7 @@ from qgis.core import (
     Qgis,
     QgsField,
     QgsFields,
+    QgsFeature,
     QgsFeatureSink,
     QgsGeometry,
     QgsProcessingException,
